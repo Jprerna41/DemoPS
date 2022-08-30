@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/RecipeListFragment">
+
+    <fragment
+        android:id="@+id/RecipeListFragment"
+        android:name="com.sapient.recipeapp.presentation.fragments.recipeList.RecipeListFragment"
+        android:label="@string/title_recipe"
+        tools:layout="@layout/fragment_recipe_list">
+
+        <action
+            android:id="@+id/action_navigate_to_detail_view"
+            app:destination="@id/RecipeDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/RecipeDetailFragment"
+        android:name="com.sapient.recipeapp.presentation.fragments.recipeDetail.RecipeDetailFragment"
+        android:label="@string/title_recipe_detail"
+        tools:layout="@layout/fragment_recipe_detail">
+
+        <argument
+            android:name="RecipeItem"
+            app:argType="com.sapient.recipeapp.domain.model.RecipeItem" />
+
+    </fragment>
+
+</navigation>
