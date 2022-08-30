@@ -40,6 +40,7 @@ internal class RecipeListViewModelTest {
     lateinit var recipeRemoteDataSource: RecipeRepositoryImpl
 
     private lateinit var viewModel: RecipeListViewModel
+
     private lateinit var recipeEmptyList: List<RecipeItem>
     private lateinit var recipeList: List<RecipeItem>
 
