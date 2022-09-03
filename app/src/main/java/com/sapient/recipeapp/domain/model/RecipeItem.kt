@@ -15,7 +15,7 @@ data class RecipeItem(
     val analyzedInstructions: List<Instruction>,
     val steps: List<Step>,
     val ingredients: List<Ingredient>,
-    var isFav : Boolean = false
+    var isFavourite : Boolean = false
 ) : Parcelable {
     override fun toString() = title
 }

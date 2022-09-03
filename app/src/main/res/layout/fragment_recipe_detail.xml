@@ -12,42 +12,50 @@
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@android:color/white"
-            android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="24dp">
 
             <TextView
                 android:id="@+id/tv_title"
+                style="@style/TextView.Bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/title_recipe_detail"
                 android:textAppearance="@style/TextView.Title"
                 android:textSize="20sp"
-                android:layout_marginBottom="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="@string/placeholder_tv_title" />
 
             <ImageView
                 android:id="@+id/img_cover"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:adjustViewBounds="true"
                 android:background="@color/colorWhiteLilac"
                 android:contentDescription="@string/title_recipe"
                 android:scaleType="centerCrop"
+                android:src="@drawable/ic_placeholder_food"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_placeholder_food"
-                android:src="@drawable/ic_placeholder_food"/>
+                app:layout_constraintTop_toBottomOf="@+id/tv_title"
+                tools:src="@drawable/ic_placeholder_food" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/hint_summary"
-                android:textAppearance="@style/TextView.Title.Section" />
+                android:textAppearance="@style/TextView.Title.Section"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/img_cover" />
 
             <TextView
                 android:id="@+id/tv_summary"
@@ -56,15 +64,20 @@
                 android:layout_marginTop="8dp"
                 android:textColor="@android:color/black"
                 android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView"
                 tools:text="Summary" />
 
             <TextView
                 android:id="@+id/tv_hint_ingredients"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:text="@string/hint_ingredients"
-                android:textAppearance="@style/TextView.Title.Section" />
+                android:textAppearance="@style/TextView.Title.Section"
+                app:layout_constraintStart_toStartOf="@+id/tv_title"
+                app:layout_constraintTop_toBottomOf="@+id/tv_summary" />
 
             <TextView
                 android:id="@+id/tv_ingredients"
@@ -73,15 +86,20 @@
                 android:layout_marginTop="8dp"
                 android:textColor="@android:color/black"
                 android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_hint_ingredients"
                 tools:text="1. Rice\n2. Egg" />
 
             <TextView
                 android:id="@+id/tv_hint_steps"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:text="@string/hint_instructions"
-                android:textAppearance="@style/TextView.Title.Section" />
+                android:textAppearance="@style/TextView.Title.Section"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_ingredients" />
 
             <TextView
                 android:id="@+id/tv_steps"
@@ -90,9 +108,12 @@
                 android:layout_marginTop="8dp"
                 android:textColor="@android:color/black"
                 android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_hint_steps"
                 tools:text="1. Boil water\n2. Add sugar" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 

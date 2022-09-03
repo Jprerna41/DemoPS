@@ -3,7 +3,6 @@ package com.sapient.recipeapp.di
 import androidx.viewbinding.BuildConfig
 import com.google.gson.GsonBuilder
 import com.sapient.recipeapp.data.remote.network.RecipeServices
-import com.sapient.recipeapp.data.remote.network.model.RecipeDtoMapper
 import com.sapient.recipeapp.utils.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -17,14 +16,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
-private const val timeoutRead = 30   //In seconds
-private const val contentType = "Content-Type"
-private const val contentTypeValue = "application/json"
-private const val timeoutConnect = 30   //In seconds
-
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    private const val timeoutRead = 30   //In seconds
+    private const val contentType = "Content-Type"
+    private const val contentTypeValue = "application/json"
+    private const val timeoutConnect = 30   //In seconds
 
     private val okHttpBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
     private val retrofit: Retrofit
@@ -58,12 +57,6 @@ object NetworkModule {
             .baseUrl(BASE_URL).client(client)
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .build()
-    }
-
-    @Singleton
-    @Provides
-    fun provideRecipeMapper(): RecipeDtoMapper {
-        return RecipeDtoMapper()
     }
 
     @Singleton

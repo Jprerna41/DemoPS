@@ -32,23 +32,23 @@ class RecipeDetailFragment : BaseFragment<FragmentRecipeDetailBinding>() {
     }
 
     private fun showData(recipe: RecipeItem) {
-        binding?.tvTitle?.text = recipe.title
-        binding?.tvSummary?.text = recipe.summary
-        binding?.tvIngredients?.text =
+        binding.tvTitle.text = recipe.title
+        binding.tvSummary.text = recipe.summary
+        binding.tvIngredients.text =
             recipeDetailViewModel.getFormattedIngredients(recipe.ingredients)
-        binding?.tvSteps?.text = recipeDetailViewModel.getFormattedSteps(recipe.steps)
-        binding?.imgCover?.loadRecipeImage(
+        binding.tvSteps.text = recipeDetailViewModel.getFormattedSteps(recipe.steps)
+        binding.imgCover.loadRecipeImage(
             recipe.imageUrl
         )
 
         if (recipe.ingredients.isEmpty()) {
-            binding?.tvHintIngredients?.visibility = View.GONE
-            binding?.tvIngredients?.visibility = View.GONE
+            binding.tvHintIngredients.visibility = View.GONE
+            binding.tvIngredients.visibility = View.GONE
         }
 
         if (recipe.steps.isEmpty()) {
-            binding?.tvHintSteps?.visibility = View.GONE
-            binding?.tvSteps?.visibility = View.GONE
+            binding.tvHintSteps.visibility = View.GONE
+            binding.tvSteps.visibility = View.GONE
         }
     }
 }

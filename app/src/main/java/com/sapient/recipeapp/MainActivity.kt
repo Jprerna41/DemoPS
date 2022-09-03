@@ -1,8 +1,9 @@
 package com.sapient.recipeapp
 
-import android.view.Menu
-import android.view.MenuItem
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.sapient.recipeapp.databinding.ActivityMainBinding
 import com.sapient.recipeapp.presentation.base.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,24 +17,11 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        setSupportActionBar(binding.toolbar)
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navHostFragment.findNavController().run {
+            binding.toolbar.setupWithNavController(this, AppBarConfiguration(graph))
         }
-    }
-
-    // Update action bar with the nav controller
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp() ||  super.onSupportNavigateUp()
     }
 }

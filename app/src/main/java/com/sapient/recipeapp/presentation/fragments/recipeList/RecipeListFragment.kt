@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.sapient.recipeapp.data.Result
 import com.sapient.recipeapp.databinding.FragmentRecipeListBinding
 import com.sapient.recipeapp.domain.model.RecipeItem
@@ -35,9 +35,13 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), OnItemClic
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
-        binding?.rvRecipes?.layoutManager = layoutManager
-        binding?.rvRecipes?.setHasFixedSize(true)
+        val layoutManager = GridLayoutManager(context, 2)
+        binding.rvRecipes.layoutManager = layoutManager
+        binding.rvRecipes.setHasFixedSize(true)
+        recipeListAdapter = RecipeListAdapter(this)
+        binding.rvRecipes.adapter = recipeListAdapter
+        (binding.rvRecipes.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+        recipeListViewModel.getRecipes()
         initObserver()
     }
 
@@ -56,21 +60,19 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), OnItemClic
     }
 
     private fun showLoadingContent() {
-        binding?.pbLoading?.visible()
-        binding?.tvNotFound?.gone()
-        binding?.rvRecipes?.gone()
+        binding.pbLoading.visible()
+        binding.tvNotFound.gone()
+        binding.rvRecipes.gone()
     }
 
     private fun showDataView(show: Boolean) {
-        binding?.tvNotFound?.visibility = if (show) View.GONE else View.VISIBLE
-        binding?.rvRecipes?.visibility = if (show) View.VISIBLE else View.GONE
-        binding?.pbLoading?.gone()
+        binding.tvNotFound.visibility = if (show) View.GONE else View.VISIBLE
+        binding.rvRecipes.visibility = if (show) View.VISIBLE else View.GONE
+        binding.pbLoading.gone()
     }
 
     private fun bindListData(recipes: List<RecipeItem>) {
         if (recipes.isNotEmpty()) {
-            recipeListAdapter = RecipeListAdapter(this, ArrayList(recipes))
-            binding?.rvRecipes?.adapter = recipeListAdapter
             recipeListAdapter.submitList(recipes)
             showDataView(true)
         } else {
@@ -81,6 +83,11 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), OnItemClic
     override fun onItemSelected(recipe: RecipeItem) {
         val action = RecipeListFragmentDirections.actionNavigateToDetailView(recipe)
         findNavController().navigate(action)
+    }
+
+    override fun onUpdateFavourite(recipesItem: RecipeItem, position: Int) {
+        recipeListViewModel.setFavorite(recipesItem)
+        recipeListAdapter.notifyItemChanged(position)
     }
 
 

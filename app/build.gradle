@@ -77,6 +77,10 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.10'
 
+    // Database
+    implementation 'androidx.room:room-ktx:2.4.3'
+    kapt 'androidx.room:room-compiler:2.4.3'
+
     // Test Dependencies
     //Mockk
     testImplementation "io.mockk:mockk:1.12.4"

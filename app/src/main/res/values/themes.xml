@@ -22,8 +22,8 @@
 
     <!-- TextView styles. -->
 
-    <style name="TextView.Medium" parent="Widget.MaterialComponents.TextView">
-        <item name="android:fontFamily">@font/</item>
+    <style name="TextView.Bold" parent="Widget.MaterialComponents.TextView">
+        <item name="android:fontFamily">@font/quicksand_bold</item>
     </style>
 
     <style name="TextView.SemiBold" parent="Widget.MaterialComponents.TextView">

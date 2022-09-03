@@ -1,35 +1,37 @@
 package com.sapient.recipeapp.presentation.fragments.recipeList
 
-import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.sapient.recipeapp.data.IRecipeRepository
+import androidx.lifecycle.*
 import com.sapient.recipeapp.data.Result
 import com.sapient.recipeapp.domain.model.RecipeItem
+import com.sapient.recipeapp.domain.usecase.CoreUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipeListViewModel @Inject constructor(private val dataRepository: IRecipeRepository) :
-    ViewModel() {
+class RecipeListViewModel
+@Inject constructor(private val useCase: CoreUseCase) : ViewModel() {
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val recipesLiveDataPrivate = MutableLiveData<Result<List<RecipeItem>>>()
+    private val recipesLiveDataPrivate = MutableLiveData<Result<List<RecipeItem>>>()
     val recipesLiveData: LiveData<Result<List<RecipeItem>>> get() = recipesLiveDataPrivate
-
-    init {
-        getRecipes()
-    }
 
     fun getRecipes() {
         viewModelScope.launch {
             recipesLiveDataPrivate.value = Result.Loading()
-            dataRepository.requestRecipes().collect { result ->
-                recipesLiveDataPrivate.value =
-                    Result.Success(result)
+            useCase.getRecipes().collect { result ->
+                recipesLiveDataPrivate.value = result
+            }
+        }
+    }
+
+    fun setFavorite(recipe: RecipeItem) {
+        CoroutineScope(Dispatchers.IO).launch {
+            if (!recipe.isFavourite) {
+                useCase.deleteFavorite(recipe)
+            } else {
+                useCase.insertFavorite(recipe)
             }
         }
     }
