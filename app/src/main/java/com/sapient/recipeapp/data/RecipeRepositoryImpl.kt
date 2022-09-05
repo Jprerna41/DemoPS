@@ -4,8 +4,8 @@ import com.sapient.recipeapp.data.local.LocalDataSource
 import com.sapient.recipeapp.data.remote.RemoteDataSource
 import com.sapient.recipeapp.data.remote.network.ApiResponse
 import com.sapient.recipeapp.domain.model.RecipeItem
-import com.sapient.recipeapp.domain.repository.ICoreRepository
-import com.sapient.recipeapp.utils.DataMapper
+import com.sapient.recipeapp.domain.repository.IRecipeRepository
+import com.sapient.recipeapp.domain.util.DataMapper
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,7 +14,8 @@ import javax.inject.Singleton
 class RecipeRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
-) : ICoreRepository{
+    private val mapper: DataMapper
+) : IRecipeRepository{
 
     override fun requestRecipes(): Flow<Result<List<RecipeItem>>> {
         return flow {
@@ -25,7 +26,7 @@ class RecipeRepositoryImpl @Inject constructor(
                         Result.Success(it.data.map { recipeResponse ->
                             val isFavorite =
                                 localDataSource.getFavorite(recipeResponse.id).first() != null
-                            DataMapper.mapRecipeResponseToDomain(recipeResponse, isFavorite)
+                            mapper.mapRecipeToDomain(recipeResponse, isFavorite)
                         })
                     }
                     is ApiResponse.Empty -> {
@@ -41,7 +42,7 @@ class RecipeRepositoryImpl @Inject constructor(
 
     override fun isFavorite(recipe: RecipeItem): Flow<Result<Boolean>> {
         return flow {
-            localDataSource.insertFavorite(DataMapper.mapRecipeDomainToEntity(recipe))
+            localDataSource.insertFavorite(mapper.mapDomainToEntity(recipe))
             emitAll(localDataSource.getFavorite(recipe.id).map {
                 Result.Success(it != null)
             })
@@ -49,11 +50,11 @@ class RecipeRepositoryImpl @Inject constructor(
     }
 
     override fun insertFavorite(recipe: RecipeItem) {
-        localDataSource.insertFavorite(DataMapper.mapRecipeDomainToEntity(recipe))
+        localDataSource.insertFavorite(mapper.mapDomainToEntity(recipe))
     }
 
     override fun deleteFavorite(recipe: RecipeItem) {
-        localDataSource.removeFavourite(DataMapper.mapRecipeDomainToEntity(recipe))
+        localDataSource.removeFavourite(mapper.mapDomainToEntity(recipe))
     }
 
 }

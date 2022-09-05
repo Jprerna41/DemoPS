@@ -1,4 +1,4 @@
-package com.sapient.recipeapp.utils
+package com.sapient.recipeapp.domain.util
 
 import com.sapient.recipeapp.data.local.entity.IngredientEntity
 import com.sapient.recipeapp.data.local.entity.InstructionEntity
@@ -9,10 +9,11 @@ import com.sapient.recipeapp.domain.model.Ingredient
 import com.sapient.recipeapp.domain.model.Instruction
 import com.sapient.recipeapp.domain.model.RecipeItem
 import com.sapient.recipeapp.domain.model.Step
+import javax.inject.Inject
 
-object DataMapper {
+class DataMapper @Inject constructor(){
 
-    fun mapRecipeResponseToDomain(
+    fun mapRecipeToDomain(
         input: RecipeResponse,
         isFavourite: Boolean = false,
     ): RecipeItem {
@@ -88,80 +89,7 @@ object DataMapper {
         )
     }
 
-    fun mapRecipeEntityToDomain(input: RecipeEntity): RecipeItem {
-        val steps = ArrayList<Step>()
-        val ingredients = ArrayList<Ingredient>()
-
-        input.analyzedInstructions?.forEach { instructionEntity ->
-            instructionEntity.steps?.forEach { stepEntity ->
-                steps.add(
-                    Step(
-                        number = stepEntity.number ?: 0,
-                        step = stepEntity.step ?: "",
-                        ingredients = stepEntity.ingredients?.map { ingredientResponse ->
-                            Ingredient(
-                                id = ingredientResponse.id ?: 0,
-                                name = ingredientResponse.name ?: "",
-                                localizedName = ingredientResponse.localizedName ?: "",
-                                image = ingredientResponse.image ?: ""
-                            )
-                        } ?: emptyList()
-                    )
-                )
-            }
-        }
-
-        input.analyzedInstructions?.forEach { instruction ->
-            instruction.steps?.forEach { step ->
-                step.ingredients?.forEach { ingredientEntity ->
-                    if (!ingredients.any { it.id == ingredientEntity.id }) {
-                        ingredients.add(
-                            Ingredient(
-                                id = ingredientEntity.id ?: 0,
-                                name = ingredientEntity.name ?: "",
-                                localizedName = ingredientEntity.localizedName ?: "",
-                                image = ingredientEntity.image ?: ""
-                            )
-                        )
-                    }
-                }
-            }
-        }
-
-        return RecipeItem(
-            id = input.id,
-            title = input.title ?: "",
-            summary = input.summary ?: "",
-            imageUrl = input.imageUrl ?: "",
-            imageType = input.imageType ?: "",
-            sourceName = input.sourceName ?: "",
-            dishTypes = input.dishTypes ?: emptyList(),
-            analyzedInstructions = input.analyzedInstructions?.map { instructionResponse ->
-                Instruction(
-                    name = instructionResponse.name ?: "",
-                    steps = instructionResponse.steps?.map { stepResponse ->
-                        Step(
-                            number = stepResponse.number ?: 0,
-                            step = stepResponse.step ?: "",
-                            ingredients = stepResponse.ingredients?.map { ingredientResponse ->
-                                Ingredient(
-                                    id = ingredientResponse.id ?: 0,
-                                    name = ingredientResponse.name ?: "",
-                                    localizedName = ingredientResponse.localizedName ?: "",
-                                    image = ingredientResponse.image ?: ""
-                                )
-                            } ?: emptyList()
-                        )
-                    } ?: emptyList()
-                )
-            } ?: emptyList(),
-            steps = steps,
-            ingredients = ingredients,
-//            isFavorite = true,
-        )
-    }
-
-    fun mapRecipeDomainToEntity(input: RecipeItem): RecipeEntity {
+    fun mapDomainToEntity(input: RecipeItem): RecipeEntity {
         val steps = ArrayList<StepEntity>()
         val ingredients = ArrayList<IngredientEntity>()
 
@@ -230,4 +158,5 @@ object DataMapper {
             },
         )
     }
+
 }

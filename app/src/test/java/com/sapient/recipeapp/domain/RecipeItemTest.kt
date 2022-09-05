@@ -52,9 +52,10 @@ class RecipeItemTest {
         Assert.assertEquals(recipe.title, recipe.toString())
     }
 
-    @Test fun test_default_values() {
+    @Test
+    fun test_default_values() {
         Assert.assertEquals(1, recipe.id)
-        Assert.assertEquals(false, recipe.isFav)
+        Assert.assertEquals(false, recipe.isFavourite)
     }
 
 }

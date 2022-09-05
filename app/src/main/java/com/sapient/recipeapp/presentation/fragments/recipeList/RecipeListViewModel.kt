@@ -1,9 +1,12 @@
 package com.sapient.recipeapp.presentation.fragments.recipeList
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sapient.recipeapp.data.Result
 import com.sapient.recipeapp.domain.model.RecipeItem
-import com.sapient.recipeapp.domain.usecase.CoreUseCase
+import com.sapient.recipeapp.domain.usecase.RecipeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecipeListViewModel
-@Inject constructor(private val useCase: CoreUseCase) : ViewModel() {
+@Inject constructor(private val useCase: RecipeUseCase) : ViewModel() {
 
     private val recipesLiveDataPrivate = MutableLiveData<Result<List<RecipeItem>>>()
     val recipesLiveData: LiveData<Result<List<RecipeItem>>> get() = recipesLiveDataPrivate
@@ -27,11 +30,13 @@ class RecipeListViewModel
     }
 
     fun setFavorite(recipe: RecipeItem) {
-        CoroutineScope(Dispatchers.IO).launch {
-            if (!recipe.isFavourite) {
-                useCase.deleteFavorite(recipe)
-            } else {
-                useCase.insertFavorite(recipe)
+        viewModelScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
+                if (!recipe.isFavourite) {
+                    useCase.deleteFavorite(recipe)
+                } else {
+                    useCase.insertFavorite(recipe)
+                }
             }
         }
     }

@@ -2,7 +2,7 @@ package com.sapient.recipeapp.di
 
 import androidx.viewbinding.BuildConfig
 import com.google.gson.GsonBuilder
-import com.sapient.recipeapp.data.remote.network.RecipeServices
+import com.sapient.recipeapp.data.remote.api.RecipeApi
 import com.sapient.recipeapp.utils.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -61,8 +61,8 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRecipeService(): RecipeServices {
-        return retrofit.create(RecipeServices::class.java)
+    fun provideRecipeService(): RecipeApi {
+        return retrofit.create(RecipeApi::class.java)
     }
 
 }

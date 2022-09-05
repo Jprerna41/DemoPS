@@ -1,12 +1,12 @@
-package com.sapient.recipeapp.domain.repository
+package com.sapient.recipeapp.domain.usecase
 
 import com.sapient.recipeapp.data.Result
 import com.sapient.recipeapp.domain.model.RecipeItem
 import kotlinx.coroutines.flow.Flow
 
-interface ICoreRepository {
+interface IRecipeUseCase {
 
-    fun requestRecipes(): Flow<Result<List<RecipeItem>>>
+    fun getRecipes(): Flow<Result<List<RecipeItem>>>
 
     fun isFavorite(recipe: RecipeItem): Flow<Result<Boolean>>
 
