@@ -10,9 +10,6 @@ import javax.inject.Singleton
 class LocalDataSource @Inject constructor(
     private val recipeDao: RecipeDao,
 ) {
-
-    fun getAllRecipeList(): Flow<List<RecipeEntity>> = recipeDao.getRecipeList()
-
     fun getFavorite(id: Int): Flow<RecipeEntity?> = recipeDao.getRecipe(id)
 
     fun insertFavorite(recipe: RecipeEntity) = recipeDao.insertRecipe(recipe)

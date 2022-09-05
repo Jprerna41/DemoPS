@@ -10,6 +10,8 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -19,6 +21,9 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 @RunWith(RobolectricTestRunner::class)
 @HiltAndroidTest
@@ -29,9 +34,11 @@ internal class RecipeListViewModelTest {
     private val useCase: RecipeUseCase = Mockito.mock(RecipeUseCase::class.java)
     private lateinit var viewModel: RecipeListViewModel
     private val instantTaskExecutorRule = InstantTaskExecutorRule()
-
     private lateinit var recipeEmptyList: List<RecipeItem>
     private lateinit var recipeList: List<RecipeItem>
+
+    @Inject
+    lateinit var repository: CoroutineContext
 
     @get:Rule
     val rule = RuleChain
@@ -41,7 +48,7 @@ internal class RecipeListViewModelTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-        viewModel = RecipeListViewModel(useCase)
+        viewModel = RecipeListViewModel(useCase, repository)
         viewModel.recipesLiveData.observeForever { }
         recipeEmptyList = emptyList()
         recipeList = listOf(createRecipeItem())

@@ -8,30 +8,33 @@ import com.sapient.recipeapp.data.Result
 import com.sapient.recipeapp.domain.model.RecipeItem
 import com.sapient.recipeapp.domain.usecase.RecipeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
 class RecipeListViewModel
-@Inject constructor(private val useCase: RecipeUseCase) : ViewModel() {
+@Inject constructor(
+    private val useCase: RecipeUseCase,
+    private val ioDispatcher: CoroutineContext
+) : ViewModel() {
 
-    private val recipesLiveDataPrivate = MutableLiveData<Result<List<RecipeItem>>>()
-    val recipesLiveData: LiveData<Result<List<RecipeItem>>> get() = recipesLiveDataPrivate
+    private val _recipesLiveDataPrivate = MutableLiveData<Result<List<RecipeItem>>>()
+    val recipesLiveData: LiveData<Result<List<RecipeItem>>> get() = _recipesLiveDataPrivate
 
     fun getRecipes() {
         viewModelScope.launch {
-            recipesLiveDataPrivate.value = Result.Loading()
+            _recipesLiveDataPrivate.value = Result.Loading()
             useCase.getRecipes().collect { result ->
-                recipesLiveDataPrivate.value = result
+                _recipesLiveDataPrivate.value = result
             }
         }
     }
 
     fun setFavorite(recipe: RecipeItem) {
         viewModelScope.launch {
-            CoroutineScope(Dispatchers.IO).launch {
+            withContext(ioDispatcher) {
                 if (!recipe.isFavourite) {
                     useCase.deleteFavorite(recipe)
                 } else {
