@@ -2,8 +2,6 @@ package com.sapient.recipeapp.di
 
 import android.content.Context
 import com.sapient.recipeapp.application.RecipeApp
-import com.sapient.recipeapp.utils.Network
-import com.sapient.recipeapp.utils.NetworkConnectivity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,12 +25,6 @@ object AppModule {
     @Singleton
     fun provideCoroutineContext(): CoroutineContext {
         return Dispatchers.IO
-    }
-
-    @Provides
-    @Singleton
-    fun provideNetworkConnectivity(@ApplicationContext context: Context): NetworkConnectivity {
-        return Network(context)
     }
 
 }

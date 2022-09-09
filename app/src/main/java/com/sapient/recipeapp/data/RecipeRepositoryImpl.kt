@@ -1,11 +1,11 @@
 package com.sapient.recipeapp.data
 
 import com.sapient.recipeapp.data.local.LocalDataSource
+import com.sapient.recipeapp.data.mapper.RecipeEntityMapper
 import com.sapient.recipeapp.data.remote.RemoteDataSource
 import com.sapient.recipeapp.data.remote.network.ApiResponse
-import com.sapient.recipeapp.domain.model.RecipeItem
-import com.sapient.recipeapp.domain.repository.IRecipeRepository
-import com.sapient.recipeapp.domain.util.DataMapper
+import com.sapient.recipeapp.domain.model.Recipe
+import com.sapient.recipeapp.domain.repository.RecipeRepository
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,47 +14,38 @@ import javax.inject.Singleton
 class RecipeRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
-    private val mapper: DataMapper
-) : IRecipeRepository{
+    private val mapper: RecipeEntityMapper
+) : RecipeRepository {
 
-    override fun requestRecipes(): Flow<Result<List<RecipeItem>>> {
+    override fun requestRecipes(): Flow<Resource<List<Recipe>>> {
         return flow {
-            emit(Result.Loading())
             emitAll(remoteDataSource.getRecipes().map {
                 when (it) {
                     is ApiResponse.Success -> {
-                        Result.Success(it.data.map { recipeResponse ->
-                            val isFavorite =
-                                localDataSource.getFavorite(recipeResponse.id).first() != null
-                            mapper.mapRecipeToDomain(recipeResponse, isFavorite)
+                        Resource.Success(it.data.map { recipeResponse ->
+                            val isFavorite = localDataSource
+                                .getFavorite(recipeResponse.id).first() != null
+                            recipeResponse.isFavourite = isFavorite
+                            mapper.mapToDomain(recipeResponse)
                         })
                     }
                     is ApiResponse.Empty -> {
-                        Result.Success(emptyList())
+                        Resource.Success(emptyList())
                     }
                     is ApiResponse.Error -> {
-                        Result.Error(it.errorMessage)
+                        Resource.Error(it.errorMessage)
                     }
                 }
             })
         }
     }
 
-    override fun isFavorite(recipe: RecipeItem): Flow<Result<Boolean>> {
-        return flow {
-            localDataSource.insertFavorite(mapper.mapDomainToEntity(recipe))
-            emitAll(localDataSource.getFavorite(recipe.id).map {
-                Result.Success(it != null)
-            })
-        }
+    override fun insertFavorite(recipe: Recipe) {
+        localDataSource.insertFavorite(mapper.mapToEntity(recipe))
     }
 
-    override fun insertFavorite(recipe: RecipeItem) {
-        localDataSource.insertFavorite(mapper.mapDomainToEntity(recipe))
-    }
-
-    override fun deleteFavorite(recipe: RecipeItem) {
-        localDataSource.removeFavourite(mapper.mapDomainToEntity(recipe))
+    override fun deleteFavorite(recipe: Recipe) {
+        localDataSource.removeFavourite(mapper.mapToEntity(recipe))
     }
 
 }

@@ -1,8 +1,11 @@
-package com.sapient.recipeapp.data.local.entity
+package com.sapient.recipeapp.data.local.db
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.sapient.recipeapp.data.model.IngredientEntity
+import com.sapient.recipeapp.data.model.InstructionEntity
+import com.sapient.recipeapp.data.model.StepEntity
 
 class Converters {
 

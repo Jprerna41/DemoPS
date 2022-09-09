@@ -1,7 +1,7 @@
-package com.sapient.recipeapp.data.local.room
+package com.sapient.recipeapp.data.local.db.dao
 
 import androidx.room.*
-import com.sapient.recipeapp.data.local.entity.RecipeEntity
+import com.sapient.recipeapp.data.model.RecipeEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

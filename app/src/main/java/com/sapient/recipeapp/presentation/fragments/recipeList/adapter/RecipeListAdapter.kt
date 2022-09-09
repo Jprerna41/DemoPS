@@ -7,11 +7,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sapient.recipeapp.R
 import com.sapient.recipeapp.databinding.ItemRecipeBinding
-import com.sapient.recipeapp.domain.model.RecipeItem
+import com.sapient.recipeapp.presentation.fragments.recipeList.RecipeListActionListener
+import com.sapient.recipeapp.presentation.model.RecipeItem
 import com.sapient.recipeapp.utils.extensions.loadRecipeImage
 
 class RecipeListAdapter(
-    private val recyclerItemListener: OnItemClickListener,
+    private val recyclerItemListener: RecipeListActionListener
 ) : ListAdapter<RecipeItem, RecipeListAdapter.RecipeListViewHolder>(DiffUtilCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeListViewHolder {
@@ -20,29 +21,30 @@ class RecipeListAdapter(
         return RecipeListViewHolder(itemBinding)
     }
 
-    class RecipeListViewHolder(
-        private val itemBinding: ItemRecipeBinding
+    inner class RecipeListViewHolder(
+        private val itemBinding: ItemRecipeBinding,
     ) : RecyclerView.ViewHolder(itemBinding.root) {
 
-
-        fun bind(recipesItem: RecipeItem, recyclerItemListener: OnItemClickListener) {
-
-            if (recipesItem.imageUrl.isNotBlank() || recipesItem.imageUrl.isNotEmpty()) {
-                itemBinding.tvTitle.text = recipesItem.title
-                itemBinding.tvAuthor.text = recipesItem.sourceName
-                itemBinding.imgCover.loadRecipeImage(recipesItem.imageUrl)
-                itemBinding.recipeItem.setOnClickListener {
-                    recyclerItemListener.onItemSelected(recipesItem)
+        fun bind(recipesItem: RecipeItem) {
+            itemBinding
+                .apply {
+                    tvTitle.text = recipesItem.title
+                    tvAuthor.text = recipesItem.sourceName
+                    imgCover.loadRecipeImage(recipesItem.imageUrl)
+                    recipeItem.setOnClickListener {
+                        recyclerItemListener.onItemSelected(recipesItem)
+                    }
+                    btnFavorite.apply {
+                        setIconTintResource(getArchiveIconTint(recipesItem.isFavourite))
+                        setOnClickListener {
+                            recipesItem.isFavourite = !recipesItem.isFavourite
+                            recyclerItemListener.onUpdateFavourite(
+                                recipesItem,
+                                adapterPosition
+                            )
+                        }
+                    }
                 }
-                itemBinding.btnFavorite.apply {
-                    setIconTintResource(getArchiveIconTint(recipesItem.isFavourite))
-                }
-                itemBinding.btnFavorite.setOnClickListener {
-                    recipesItem.isFavourite = !recipesItem.isFavourite
-                    recyclerItemListener.onUpdateFavourite(recipesItem, adapterPosition)
-                }
-            }
-
         }
 
         private fun getArchiveIconTint(isFavorite: Boolean): Int {
@@ -52,11 +54,7 @@ class RecipeListAdapter(
     }
 
     override fun onBindViewHolder(holder: RecipeListViewHolder, position: Int) {
-        holder.bind(getItem(position), recyclerItemListener)
-    }
-
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
+        holder.bind(getItem(position))
     }
 
     class DiffUtilCallback : DiffUtil.ItemCallback<RecipeItem?>() {
@@ -69,9 +67,4 @@ class RecipeListAdapter(
         }
     }
 
-}
-
-interface OnItemClickListener {
-    fun onItemSelected(recipe: RecipeItem)
-    fun onUpdateFavourite(recipesItem: RecipeItem, position: Int)
 }

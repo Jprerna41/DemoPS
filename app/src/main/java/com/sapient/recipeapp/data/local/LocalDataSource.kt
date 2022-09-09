@@ -1,7 +1,7 @@
 package com.sapient.recipeapp.data.local
 
-import com.sapient.recipeapp.data.local.entity.RecipeEntity
-import com.sapient.recipeapp.data.local.room.RecipeDao
+import com.sapient.recipeapp.data.local.db.dao.RecipeDao
+import com.sapient.recipeapp.data.model.RecipeEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton

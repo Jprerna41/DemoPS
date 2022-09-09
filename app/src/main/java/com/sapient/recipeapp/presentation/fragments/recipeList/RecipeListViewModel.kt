@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sapient.recipeapp.data.Result
-import com.sapient.recipeapp.domain.model.RecipeItem
-import com.sapient.recipeapp.domain.usecase.RecipeUseCase
+import com.sapient.recipeapp.domain.usecase.FavouriteRecipesUseCase
+import com.sapient.recipeapp.domain.usecase.GetRecipesUseCase
+import com.sapient.recipeapp.presentation.model.RecipeItem
+import com.sapient.recipeapp.presentation.model.mapper.RecipeItemMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -16,18 +17,26 @@ import kotlin.coroutines.CoroutineContext
 @HiltViewModel
 class RecipeListViewModel
 @Inject constructor(
-    private val useCase: RecipeUseCase,
-    private val ioDispatcher: CoroutineContext
+    private val getRecipesUseCase: GetRecipesUseCase,
+    private val getFavoriteRecipesUseCase: FavouriteRecipesUseCase,
+    private val ioDispatcher: CoroutineContext,
+    private val repoItemMapper: RecipeItemMapper
 ) : ViewModel() {
 
-    private val _recipesLiveDataPrivate = MutableLiveData<Result<List<RecipeItem>>>()
-    val recipesLiveData: LiveData<Result<List<RecipeItem>>> get() = _recipesLiveDataPrivate
+    private val _recipesLiveDataPrivate = MutableLiveData<List<RecipeItem>>()
+    val recipesLiveData: LiveData<List<RecipeItem>> = _recipesLiveDataPrivate
+    val loading = MutableLiveData<Boolean>().apply { postValue(false) }
 
     fun getRecipes() {
         viewModelScope.launch {
-            _recipesLiveDataPrivate.value = Result.Loading()
-            useCase.getRecipes().collect { result ->
-                _recipesLiveDataPrivate.value = result
+            loading.postValue(true)
+            getRecipesUseCase.getRecipes().collect { result ->
+                result.data?.map {
+                    repoItemMapper.mapToPresentation(it)
+                }.apply {
+                    _recipesLiveDataPrivate.postValue(this)
+                    loading.postValue(false)
+                }
             }
         }
     }
@@ -36,9 +45,9 @@ class RecipeListViewModel
         viewModelScope.launch {
             withContext(ioDispatcher) {
                 if (!recipe.isFavourite) {
-                    useCase.deleteFavorite(recipe)
+                    getFavoriteRecipesUseCase.deleteFavorite(repoItemMapper.mapToDomain(recipe))
                 } else {
-                    useCase.insertFavorite(recipe)
+                    getFavoriteRecipesUseCase.insertFavorite(repoItemMapper.mapToDomain(recipe))
                 }
             }
         }

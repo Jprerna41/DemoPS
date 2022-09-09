@@ -1,19 +1,18 @@
 package com.sapient.recipeapp.presentation.fragments.recipeDetail
 
-import android.os.Build
 import android.os.Bundle
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.sapient.recipeapp.databinding.FragmentRecipeDetailBinding
-import com.sapient.recipeapp.domain.model.RecipeItem
 import com.sapient.recipeapp.presentation.base.BaseFragment
+import com.sapient.recipeapp.presentation.model.RecipeItem
+import com.sapient.recipeapp.utils.extensions.gone
 import com.sapient.recipeapp.utils.extensions.loadRecipeImage
 import com.sapient.recipeapp.utils.extensions.setTextFromHtml
+import com.sapient.recipeapp.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,6 +26,7 @@ class RecipeDetailFragment : BaseFragment<FragmentRecipeDetailBinding>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): FragmentRecipeDetailBinding {
+        recipeDetailViewModel.getIngredientList(args.recipeItem.analyzedInstructions)
         return FragmentRecipeDetailBinding.inflate(layoutInflater)
     }
 
@@ -36,23 +36,34 @@ class RecipeDetailFragment : BaseFragment<FragmentRecipeDetailBinding>() {
     }
 
     private fun showData(recipe: RecipeItem) {
-        binding.tvTitle.text = recipe.title
-        binding.tvSummary.setTextFromHtml(recipe.summary)
-        binding.tvIngredients.text =
-            recipeDetailViewModel.getFormattedIngredients(recipe.ingredients)
-        binding.tvSteps.text = recipeDetailViewModel.getFormattedSteps(recipe.steps)
-        binding.imgCover.loadRecipeImage(
-            recipe.imageUrl
-        )
-
-        if (recipe.ingredients.isEmpty()) {
-            binding.tvHintIngredients.visibility = View.GONE
-            binding.tvIngredients.visibility = View.GONE
+        binding.apply {
+            tvTitle.text = recipe.title
+            tvSummary.setTextFromHtml(recipe.summary)
+            imgCover.loadRecipeImage(
+                recipe.imageUrl
+            )
+            initObserver()
         }
+    }
 
-        if (recipe.steps.isEmpty()) {
-            binding.tvHintSteps.visibility = View.GONE
-            binding.tvSteps.visibility = View.GONE
+    private fun initObserver() = with(recipeDetailViewModel) {
+        stepsLiveData.observe(viewLifecycleOwner) { steps ->
+            if (steps!!.isEmpty()){
+                binding.apply {
+                    tvHintSteps.gone()
+                    tvSteps.gone()
+                }
+            }
+            binding.tvSteps.text = recipeDetailViewModel.getFormattedSteps(steps)
+        }
+        ingredientLiveData.observe(viewLifecycleOwner) { ingredients ->
+            if (ingredients!!.isEmpty()){
+                binding.apply {
+                    tvIngredients.gone()
+                    tvHintIngredients.gone()
+                }
+            }
+            binding.tvIngredients.text = recipeDetailViewModel.getFormattedIngredients(ingredients)
         }
     }
 }

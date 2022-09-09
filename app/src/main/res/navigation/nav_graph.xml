@@ -24,7 +24,7 @@
 
         <argument
             android:name="RecipeItem"
-            app:argType="com.sapient.recipeapp.domain.model.RecipeItem" />
+            app:argType="com.sapient.recipeapp.presentation.model.RecipeItem" />
 
     </fragment>
 

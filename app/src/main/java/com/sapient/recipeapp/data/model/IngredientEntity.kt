@@ -1,11 +1,11 @@
-package com.sapient.recipeapp.data.remote.response
+package com.sapient.recipeapp.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.sapient.recipeapp.data.base.ModelEntity
 
-data class IngredientResponse(
-
+data class IngredientEntity(
     @SerializedName(value = "id")
-    val id: Int?,
+    val id: Int,
 
     @SerializedName(value = "name")
     val name: String?,
@@ -15,4 +15,4 @@ data class IngredientResponse(
 
     @SerializedName(value = "image")
     val image: String?,
-)
+) : ModelEntity()

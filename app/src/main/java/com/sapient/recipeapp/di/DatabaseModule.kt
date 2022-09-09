@@ -1,8 +1,8 @@
 package com.sapient.recipeapp.di
 
 import android.content.Context
-import com.sapient.recipeapp.data.local.room.RecipeDao
-import com.sapient.recipeapp.data.local.room.RecipeDatabase
+import com.sapient.recipeapp.data.local.db.RecipeDatabase
+import com.sapient.recipeapp.data.local.db.dao.RecipeDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

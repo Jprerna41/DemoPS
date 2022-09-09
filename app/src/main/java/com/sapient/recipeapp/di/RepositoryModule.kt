@@ -2,9 +2,9 @@ package com.sapient.recipeapp.di
 
 import com.sapient.recipeapp.data.RecipeRepositoryImpl
 import com.sapient.recipeapp.data.local.LocalDataSource
+import com.sapient.recipeapp.data.mapper.RecipeEntityMapper
 import com.sapient.recipeapp.data.remote.RemoteDataSource
-import com.sapient.recipeapp.domain.repository.IRecipeRepository
-import com.sapient.recipeapp.domain.util.DataMapper
+import com.sapient.recipeapp.domain.repository.RecipeRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,12 +20,13 @@ object RepositoryModule {
     fun provideRecipeRepository(
         localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
-        mapper: DataMapper
-    ): IRecipeRepository {
+        mapper: RecipeEntityMapper
+    ): RecipeRepository {
         return RecipeRepositoryImpl(
             localDataSource = localDataSource,
             remoteDataSource = remoteDataSource,
             mapper = mapper
         )
     }
+
 }

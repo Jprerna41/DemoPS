@@ -1,12 +1,12 @@
-package com.sapient.recipeapp.data.local.room
+package com.sapient.recipeapp.data.local.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.sapient.recipeapp.data.local.entity.Converters
-import com.sapient.recipeapp.data.local.entity.RecipeEntity
+import com.sapient.recipeapp.data.local.db.dao.RecipeDao
+import com.sapient.recipeapp.data.model.RecipeEntity
 
 /**
  * The Room database for this app
