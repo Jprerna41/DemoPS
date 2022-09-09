@@ -2,6 +2,7 @@ package com.sapient.recipeapp.data
 
 import com.sapient.recipeapp.data.local.LocalDataSource
 import com.sapient.recipeapp.data.mapper.RecipeEntityMapper
+import com.sapient.recipeapp.data.model.RecipeEntity
 import com.sapient.recipeapp.data.remote.RemoteDataSource
 import com.sapient.recipeapp.data.remote.network.ApiResponse
 import com.sapient.recipeapp.domain.model.Recipe
@@ -23,9 +24,7 @@ class RecipeRepositoryImpl @Inject constructor(
                 when (it) {
                     is ApiResponse.Success -> {
                         Resource.Success(it.data.map { recipeResponse ->
-                            val isFavorite = localDataSource
-                                .getFavorite(recipeResponse.id).first() != null
-                            recipeResponse.isFavourite = isFavorite
+                            recipeResponse.isFavourite = getIsFavouriteFromDb(recipeResponse)
                             mapper.mapToDomain(recipeResponse)
                         })
                     }
@@ -38,6 +37,10 @@ class RecipeRepositoryImpl @Inject constructor(
                 }
             })
         }
+    }
+
+    private suspend fun getIsFavouriteFromDb(recipeResponse: RecipeEntity): Boolean {
+        return localDataSource.getFavorite(recipeResponse.id).first() != null
     }
 
     override fun insertFavorite(recipe: Recipe) {

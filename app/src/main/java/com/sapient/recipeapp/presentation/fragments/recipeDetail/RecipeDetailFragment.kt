@@ -12,7 +12,6 @@ import com.sapient.recipeapp.presentation.model.RecipeItem
 import com.sapient.recipeapp.utils.extensions.gone
 import com.sapient.recipeapp.utils.extensions.loadRecipeImage
 import com.sapient.recipeapp.utils.extensions.setTextFromHtml
-import com.sapient.recipeapp.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -48,7 +47,7 @@ class RecipeDetailFragment : BaseFragment<FragmentRecipeDetailBinding>() {
 
     private fun initObserver() = with(recipeDetailViewModel) {
         stepsLiveData.observe(viewLifecycleOwner) { steps ->
-            if (steps!!.isEmpty()){
+            if (steps!!.isEmpty()) {
                 binding.apply {
                     tvHintSteps.gone()
                     tvSteps.gone()
@@ -57,7 +56,7 @@ class RecipeDetailFragment : BaseFragment<FragmentRecipeDetailBinding>() {
             binding.tvSteps.text = recipeDetailViewModel.getFormattedSteps(steps)
         }
         ingredientLiveData.observe(viewLifecycleOwner) { ingredients ->
-            if (ingredients!!.isEmpty()){
+            if (ingredients!!.isEmpty()) {
                 binding.apply {
                     tvIngredients.gone()
                     tvHintIngredients.gone()

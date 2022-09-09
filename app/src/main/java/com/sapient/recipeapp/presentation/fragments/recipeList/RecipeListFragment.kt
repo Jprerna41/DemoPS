@@ -22,11 +22,6 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), RecipeList
     private val recipeListViewModel: RecipeListViewModel by viewModels()
     private lateinit var recipeListAdapter: RecipeListAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        recipeListViewModel.getRecipes()
-    }
-
     override fun onCreateBinding(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,6 +31,7 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), RecipeList
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        recipeListViewModel.getRecipes()
         super.onViewCreated(view, savedInstanceState)
         val gridLayoutManager = GridLayoutManager(context, 2)
         recipeListAdapter = RecipeListAdapter(this)
@@ -55,7 +51,7 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), RecipeList
             bindListData(result)
         }
 
-        loading.observe(viewLifecycleOwner) {
+        loadingView.observe(viewLifecycleOwner) {
             if (it) {
                 binding.apply {
                     pbLoading.visible()
@@ -97,6 +93,5 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), RecipeList
         recipeListViewModel.setFavorite(recipesItem)
         recipeListAdapter.notifyItemChanged(position)
     }
-
 
 }

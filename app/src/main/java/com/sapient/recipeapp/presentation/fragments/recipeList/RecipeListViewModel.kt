@@ -25,17 +25,19 @@ class RecipeListViewModel
 
     private val _recipesLiveDataPrivate = MutableLiveData<List<RecipeItem>>()
     val recipesLiveData: LiveData<List<RecipeItem>> = _recipesLiveDataPrivate
-    val loading = MutableLiveData<Boolean>().apply { postValue(false) }
+
+    private val _loadingPrivate = MutableLiveData<Boolean>()
+    val loadingView: LiveData<Boolean> = _loadingPrivate
 
     fun getRecipes() {
         viewModelScope.launch {
-            loading.postValue(true)
+            _loadingPrivate.postValue(true)
             getRecipesUseCase.getRecipes().collect { result ->
                 result.data?.map {
                     repoItemMapper.mapToPresentation(it)
                 }.apply {
                     _recipesLiveDataPrivate.postValue(this)
-                    loading.postValue(false)
+                    _loadingPrivate.postValue(false)
                 }
             }
         }
