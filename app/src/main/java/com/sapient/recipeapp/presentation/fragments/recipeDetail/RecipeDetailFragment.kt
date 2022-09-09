@@ -25,7 +25,7 @@ class RecipeDetailFragment : BaseFragment<FragmentRecipeDetailBinding>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): FragmentRecipeDetailBinding {
-        recipeDetailViewModel.getIngredientList(args.recipeItem.analyzedInstructions)
+        recipeDetailViewModel.getSeparateIngredientAndStepsList(args.recipeItem.analyzedInstructions)
         return FragmentRecipeDetailBinding.inflate(layoutInflater)
     }
 

@@ -2,10 +2,10 @@ package com.sapient.recipeapp.data.room
 
 import android.content.Context
 import androidx.room.Room
-import com.sapient.recipeapp.createRecipeEntity
-import com.sapient.recipeapp.data.local.entity.RecipeEntity
-import com.sapient.recipeapp.data.local.room.RecipeDao
-import com.sapient.recipeapp.data.local.room.RecipeDatabase
+import com.sapient.recipeapp.RecipeEntityDataProvider
+import com.sapient.recipeapp.data.local.db.RecipeDatabase
+import com.sapient.recipeapp.data.local.db.dao.RecipeDao
+import com.sapient.recipeapp.data.model.RecipeEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
@@ -39,8 +39,8 @@ class RecipeDaoTest {
     }
 
     @Test
-    fun testGetEntityList() {
-        val recipeEntityList = listOf(createRecipeEntity())
+    fun `test getEntity List`() {
+        val recipeEntityList = RecipeEntityDataProvider.getRecipeEntityList()
         val recipe: Flow<List<RecipeEntity>> = flow { userDao.getRecipeList() }
         runBlocking {
             recipe.collect {
@@ -51,13 +51,13 @@ class RecipeDaoTest {
     }
 
     @Test
-    fun testGetEntityById() {
-        val recipeEntity = createRecipeEntity()
+    fun `test getEntity by id`() {
+        val recipeEntity = RecipeEntityDataProvider.getRecipeEntity()
         val getInsertedRecipe: Flow<RecipeEntity> = flow { userDao.getRecipe(recipeEntity.id) }
         runBlocking {
             getInsertedRecipe.collect {
                 Assert.assertNotNull(it)
-                Assert.assertEquals(recipeEntity.id, it!!.id)
+                Assert.assertEquals(recipeEntity.id, it.id)
             }
         }
     }

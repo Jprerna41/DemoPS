@@ -9,8 +9,11 @@ import com.sapient.recipeapp.domain.usecase.GetRecipesUseCase
 import com.sapient.recipeapp.presentation.model.RecipeItem
 import com.sapient.recipeapp.presentation.model.mapper.RecipeItemMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -19,7 +22,7 @@ class RecipeListViewModel
 @Inject constructor(
     private val getRecipesUseCase: GetRecipesUseCase,
     private val getFavoriteRecipesUseCase: FavouriteRecipesUseCase,
-    private val ioDispatcher: CoroutineContext,
+    private val ioDispatcher: CoroutineContext = Dispatchers.IO,
     private val repoItemMapper: RecipeItemMapper
 ) : ViewModel() {
 
@@ -46,10 +49,10 @@ class RecipeListViewModel
     fun setFavorite(recipe: RecipeItem) {
         viewModelScope.launch {
             withContext(ioDispatcher) {
-                if (!recipe.isFavourite) {
-                    getFavoriteRecipesUseCase.deleteFavorite(repoItemMapper.mapToDomain(recipe))
-                } else {
+                if (recipe.isFavourite) {
                     getFavoriteRecipesUseCase.insertFavorite(repoItemMapper.mapToDomain(recipe))
+                } else {
+                    getFavoriteRecipesUseCase.deleteFavorite(repoItemMapper.mapToDomain(recipe))
                 }
             }
         }

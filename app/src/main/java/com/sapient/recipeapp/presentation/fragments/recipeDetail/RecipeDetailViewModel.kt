@@ -19,7 +19,7 @@ class RecipeDetailViewModel @Inject constructor() : ViewModel() {
     private val _ingredientLiveDataPrivate = MutableLiveData<List<IngredientItem>?>()
     val ingredientLiveData: LiveData<List<IngredientItem>?> = _ingredientLiveDataPrivate
 
-    fun getIngredientList(instruction: List<InstructionItem>?) {
+    fun getSeparateIngredientAndStepsList(instruction: List<InstructionItem>?) {
         if (instruction!!.isEmpty()) {
             _stepsLiveDataPrivate.postValue(emptyList())
             _ingredientLiveDataPrivate.postValue(emptyList())
@@ -29,7 +29,7 @@ class RecipeDetailViewModel @Inject constructor() : ViewModel() {
             instructionItem.steps?.let { stepList ->
                 _stepsLiveDataPrivate.postValue(stepList)
                 stepList.forEach { stepItem ->
-                    stepItem.ingredients.let { ingredientList ->
+                    stepItem.ingredients?.let { ingredientList ->
                         _ingredientLiveDataPrivate.postValue(ingredientList)
                     }
                 }
