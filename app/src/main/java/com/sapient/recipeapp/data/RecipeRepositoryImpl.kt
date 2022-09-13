@@ -5,7 +5,7 @@ import com.sapient.recipeapp.data.mapper.RecipeEntityMapper
 import com.sapient.recipeapp.data.model.RecipeEntity
 import com.sapient.recipeapp.data.remote.RemoteDataSource
 import com.sapient.recipeapp.data.remote.network.ApiResponse
-import com.sapient.recipeapp.domain.model.Recipe
+import com.sapient.recipeapp.domain.model.RecipeDomainModel
 import com.sapient.recipeapp.domain.repository.RecipeRepository
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -18,7 +18,7 @@ class RecipeRepositoryImpl @Inject constructor(
     private val mapper: RecipeEntityMapper
 ) : RecipeRepository {
 
-    override fun requestRecipes(): Flow<Resource<List<Recipe>>> {
+    override fun requestRecipes(): Flow<Resource<List<RecipeDomainModel>>> {
         return flow {
             emitAll(remoteDataSource.getRecipes().map {
                 when (it) {
@@ -43,12 +43,11 @@ class RecipeRepositoryImpl @Inject constructor(
         return localDataSource.getFavorite(recipeResponse.id).first() != null
     }
 
-    override fun insertFavorite(recipe: Recipe) {
+    override fun insertFavorite(recipe: RecipeDomainModel) {
         localDataSource.insertFavorite(mapper.mapToEntity(recipe))
     }
 
-    override fun deleteFavorite(recipe: Recipe) {
+    override fun deleteFavorite(recipe: RecipeDomainModel) {
         localDataSource.removeFavourite(mapper.mapToEntity(recipe))
     }
-
 }

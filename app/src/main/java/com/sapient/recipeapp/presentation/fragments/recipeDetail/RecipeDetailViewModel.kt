@@ -13,14 +13,14 @@ import javax.inject.Inject
 @HiltViewModel
 class RecipeDetailViewModel @Inject constructor() : ViewModel() {
 
-    private val _stepsLiveDataPrivate = MutableLiveData<List<StepsItem>?>()
-    val stepsLiveData: LiveData<List<StepsItem>?> = _stepsLiveDataPrivate
+    private val _stepsLiveDataPrivate = MutableLiveData<List<StepsItem>>()
+    val stepsLiveData: LiveData<List<StepsItem>> = _stepsLiveDataPrivate
 
-    private val _ingredientLiveDataPrivate = MutableLiveData<List<IngredientItem>?>()
-    val ingredientLiveData: LiveData<List<IngredientItem>?> = _ingredientLiveDataPrivate
+    private val _ingredientLiveDataPrivate = MutableLiveData<List<IngredientItem>>()
+    val ingredientLiveData: LiveData<List<IngredientItem>> = _ingredientLiveDataPrivate
 
-    fun getSeparateIngredientAndStepsList(instruction: List<InstructionItem>?) {
-        if (instruction!!.isEmpty()) {
+    fun getSeparateIngredientAndStepsList(instruction: List<InstructionItem>) {
+        if (instruction.isEmpty()) {
             _stepsLiveDataPrivate.postValue(emptyList())
             _ingredientLiveDataPrivate.postValue(emptyList())
             return
@@ -79,5 +79,4 @@ class RecipeDetailViewModel @Inject constructor() : ViewModel() {
         }
         return stringBuilder.toString()
     }
-
 }

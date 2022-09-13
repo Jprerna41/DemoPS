@@ -34,6 +34,7 @@ data class RecipeEntity(
     val analyzedInstructions: List<InstructionEntity>?,
 
     var isFavourite: Boolean = false
+
 ) : ModelEntity() {
     companion object {
         const val TABLE_NAME = "favorite"

@@ -1,8 +1,8 @@
 package com.sapient.recipeapp.domain.usecase
 
-import com.sapient.recipeapp.RecipeEntityDataProvider
 import com.sapient.recipeapp.data.Resource
 import com.sapient.recipeapp.domain.repository.RecipeRepository
+import com.sapient.recipeapp.util.RecipeEntityDataProvider
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
@@ -33,33 +33,33 @@ internal class GetRecipesUseCaseTest {
 
     @Test
     fun `test getRecipes method call`() {
-        useCase.getRecipes()
+        useCase()
         verify(mockRepository, times(1)).requestRecipes()
     }
 
     @Test
-    fun `test expected recipe ids`() {
-        val expectedRecipeId = 8723648
-        val res = useCase.getRecipes()
-        runBlocking {
-            res.collect { result ->
-                result.data?.map {
-                    Assert.assertEquals(expectedRecipeId, it.id)
-                }
+    fun `test expected recipe ids`() = runBlocking {
+
+        useCase().collect { result ->
+            result.data?.map {
+                Assert.assertEquals(EXPECTED_RECIPE_ID, it.id)
             }
         }
         verify(mockRepository, times(1)).requestRecipes()
     }
 
     @Test
-    fun `test getRecipe return empty list`() {
-        val expectedListSize = 0
-        `when`(useCase.getRecipes()).thenReturn(flow { RecipeEntityDataProvider.getRecipeEntityList() })
-        val res = useCase.getRecipes()
-        runBlocking {
-            res.collect { result ->
-                Assert.assertEquals(expectedListSize, result.data!!.size)
-            }
+    fun `test getRecipe return empty list`() = runBlocking {
+
+        `when`(useCase()).thenReturn(flow { RecipeEntityDataProvider.getRecipeEntityList() })
+
+        useCase().collect { result ->
+            Assert.assertEquals(EXPECTED_RECIPE_LIST_SIZE, result.data?.size)
         }
+    }
+
+    private companion object {
+        const val EXPECTED_RECIPE_ID = 8723648
+        const val EXPECTED_RECIPE_LIST_SIZE = 0
     }
 }

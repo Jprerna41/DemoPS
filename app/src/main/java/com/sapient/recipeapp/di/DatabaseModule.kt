@@ -24,5 +24,4 @@ object DatabaseModule {
     fun provideRecipeDao(appDatabase: RecipeDatabase): RecipeDao {
         return appDatabase.recipeDao()
     }
-
 }

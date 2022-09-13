@@ -1,14 +1,14 @@
 package com.sapient.recipeapp.presentation.model.mapper
 
-import com.sapient.recipeapp.domain.model.Recipe
+import com.sapient.recipeapp.domain.model.RecipeDomainModel
 import com.sapient.recipeapp.presentation.base.ItemMapper
 import com.sapient.recipeapp.presentation.model.RecipeItem
 import javax.inject.Inject
 
 
 class RecipeItemMapper @Inject constructor(private val instructionItemMapper: InstructionItemMapper) :
-    ItemMapper<Recipe, RecipeItem> {
-    override fun mapToPresentation(model: Recipe) = RecipeItem(
+    ItemMapper<RecipeDomainModel, RecipeItem> {
+    override fun mapToPresentation(model: RecipeDomainModel) = RecipeItem(
         id = model.id,
         title = model.title,
         summary = model.summary,
@@ -24,7 +24,7 @@ class RecipeItemMapper @Inject constructor(private val instructionItemMapper: In
         isFavourite = model.isFavourite
     )
 
-    override fun mapToDomain(modelItem: RecipeItem) = Recipe(
+    override fun mapToDomain(modelItem: RecipeItem) = RecipeDomainModel(
         id = modelItem.id,
         title = modelItem.title,
         summary = modelItem.summary,
@@ -39,5 +39,4 @@ class RecipeItemMapper @Inject constructor(private val instructionItemMapper: In
         },
         isFavourite = modelItem.isFavourite
     )
-
 }

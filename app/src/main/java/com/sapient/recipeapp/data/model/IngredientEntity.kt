@@ -1,18 +1,26 @@
 package com.sapient.recipeapp.data.model
 
-import com.google.gson.annotations.SerializedName
+import androidx.room.ColumnInfo
 import com.sapient.recipeapp.data.base.ModelEntity
 
 data class IngredientEntity(
-    @SerializedName(value = "id")
-    val id: Int,
+    @ColumnInfo(name = COLUMN_ID)
+    val id: Int?,
 
-    @SerializedName(value = "name")
+    @ColumnInfo(name = COLUMN_NAME)
     val name: String?,
 
-    @SerializedName(value = "localizedName")
+    @ColumnInfo(name = COLUMN_LOCALIZED_NAME)
     val localizedName: String?,
 
-    @SerializedName(value = "image")
+    @ColumnInfo(name = COLUMN_IMAGE)
     val image: String?,
-) : ModelEntity()
+
+) : ModelEntity() {
+    companion object {
+        const val COLUMN_ID = "id"
+        const val COLUMN_NAME = "name"
+        const val COLUMN_LOCALIZED_NAME = "localized_name"
+        const val COLUMN_IMAGE = "image"
+    }
+}

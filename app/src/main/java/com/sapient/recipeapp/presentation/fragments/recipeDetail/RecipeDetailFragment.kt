@@ -25,7 +25,9 @@ class RecipeDetailFragment : BaseFragment<FragmentRecipeDetailBinding>() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): FragmentRecipeDetailBinding {
-        recipeDetailViewModel.getSeparateIngredientAndStepsList(args.recipeItem.analyzedInstructions)
+        args.recipeItem.analyzedInstructions?.let { instructionList ->
+            recipeDetailViewModel.getSeparateIngredientAndStepsList(instructionList)
+        }
         return FragmentRecipeDetailBinding.inflate(layoutInflater)
     }
 
@@ -47,7 +49,7 @@ class RecipeDetailFragment : BaseFragment<FragmentRecipeDetailBinding>() {
 
     private fun initObserver() = with(recipeDetailViewModel) {
         stepsLiveData.observe(viewLifecycleOwner) { steps ->
-            if (steps!!.isEmpty()) {
+            if (steps.isEmpty()) {
                 binding.apply {
                     tvHintSteps.gone()
                     tvSteps.gone()
@@ -55,8 +57,9 @@ class RecipeDetailFragment : BaseFragment<FragmentRecipeDetailBinding>() {
             }
             binding.tvSteps.text = recipeDetailViewModel.getFormattedSteps(steps)
         }
+
         ingredientLiveData.observe(viewLifecycleOwner) { ingredients ->
-            if (ingredients!!.isEmpty()) {
+            if (ingredients.isEmpty()) {
                 binding.apply {
                     tvIngredients.gone()
                     tvHintIngredients.gone()

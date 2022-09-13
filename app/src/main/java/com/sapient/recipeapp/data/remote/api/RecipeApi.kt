@@ -16,5 +16,4 @@ interface RecipeApi {
         @Query("apiKey") apiKey: String,
         @Query("addRecipeInformation") addRecipeInformation: Boolean? = true
     ): ListRecipeResponse
-
 }

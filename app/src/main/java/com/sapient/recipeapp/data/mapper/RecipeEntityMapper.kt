@@ -2,14 +2,14 @@ package com.sapient.recipeapp.data.mapper
 
 import com.sapient.recipeapp.data.base.EntityMapper
 import com.sapient.recipeapp.data.model.RecipeEntity
-import com.sapient.recipeapp.domain.model.Recipe
+import com.sapient.recipeapp.domain.model.RecipeDomainModel
 import javax.inject.Inject
 
 
 class RecipeEntityMapper @Inject constructor(private val instructionEntityMapper: InstructionEntityMapper) :
-    EntityMapper<Recipe, RecipeEntity> {
+    EntityMapper<RecipeDomainModel, RecipeEntity> {
 
-    override fun mapToDomain(entity: RecipeEntity): Recipe = Recipe(
+    override fun mapToDomain(entity: RecipeEntity): RecipeDomainModel = RecipeDomainModel(
         id = entity.id,
         title = entity.title,
         summary = entity.summary,
@@ -17,13 +17,13 @@ class RecipeEntityMapper @Inject constructor(private val instructionEntityMapper
         imageType = entity.imageType,
         sourceName = entity.sourceName,
         dishTypes = entity.dishTypes,
-        analyzedInstructions = entity.analyzedInstructions!!.map {
+        analyzedInstructions = entity.analyzedInstructions?.map {
             instructionEntityMapper.mapToDomain(it)
         },
         isFavourite = entity.isFavourite
     )
 
-    override fun mapToEntity(model: Recipe): RecipeEntity = RecipeEntity(
+    override fun mapToEntity(model: RecipeDomainModel): RecipeEntity = RecipeEntity(
         id = model.id,
         title = model.title,
         summary = model.summary,
@@ -31,10 +31,9 @@ class RecipeEntityMapper @Inject constructor(private val instructionEntityMapper
         imageType = model.imageType,
         sourceName = model.sourceName,
         dishTypes = model.dishTypes,
-        analyzedInstructions = model.analyzedInstructions!!.map {
+        analyzedInstructions = model.analyzedInstructions?.map {
             instructionEntityMapper.mapToEntity(it)
         },
         isFavourite = model.isFavourite
     )
-
 }

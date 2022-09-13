@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Recipe(
+data class RecipeDomainModel(
     val id: Int,
     val title: String?,
     val summary: String?,
@@ -12,6 +12,6 @@ data class Recipe(
     val imageType: String?,
     val sourceName: String?,
     val dishTypes: List<String>?,
-    val analyzedInstructions: List<Instruction>?,
-    val isFavourite: Boolean = false
+    val analyzedInstructions: List<InstructionDomainModel>?,
+    var isFavourite: Boolean = false
 ) : Model(), Parcelable

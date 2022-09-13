@@ -43,7 +43,6 @@ class RetrofitBuilder @Inject constructor(@ApplicationContext private val contex
             return loggingInterceptor
         }
 
-
     fun build(): Retrofit {
         okHttpBuilder.addInterceptor(headerInterceptor)
         okHttpBuilder.addInterceptor(logger)
@@ -55,6 +54,4 @@ class RetrofitBuilder @Inject constructor(@ApplicationContext private val contex
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .build()
     }
-
-
 }

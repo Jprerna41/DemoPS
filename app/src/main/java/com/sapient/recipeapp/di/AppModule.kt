@@ -26,5 +26,4 @@ object AppModule {
     fun provideCoroutineContext(): CoroutineContext {
         return Dispatchers.IO
     }
-
 }

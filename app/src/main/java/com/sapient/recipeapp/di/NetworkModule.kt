@@ -21,5 +21,4 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(retrofitBuilder: RetrofitBuilder): Retrofit = retrofitBuilder
         .build()
-
 }

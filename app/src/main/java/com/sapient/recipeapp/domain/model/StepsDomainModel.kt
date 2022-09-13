@@ -4,8 +4,8 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Steps(
+data class StepsDomainModel(
     val number: Int,
     val step: String?,
-    val ingredients: List<Ingredient>?
+    val ingredients: List<IngredientDomainModel>?
 ) : Model(), Parcelable

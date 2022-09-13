@@ -1,24 +1,24 @@
 package com.sapient.recipeapp.presentation.model.mapper
 
-import com.sapient.recipeapp.domain.model.Ingredient
+import com.sapient.recipeapp.domain.model.IngredientDomainModel
 import com.sapient.recipeapp.presentation.base.ItemMapper
 import com.sapient.recipeapp.presentation.model.IngredientItem
 import javax.inject.Inject
 
-class IngredientItemMapper @Inject constructor() : ItemMapper<Ingredient, IngredientItem> {
+class IngredientItemMapper @Inject constructor() :
+    ItemMapper<IngredientDomainModel, IngredientItem> {
 
-    override fun mapToPresentation(model: Ingredient) = IngredientItem(
+    override fun mapToPresentation(model: IngredientDomainModel) = IngredientItem(
         id = model.id,
         name = model.name,
         localizedName = model.localizedName,
         image = model.image
     )
 
-    override fun mapToDomain(modelItem: IngredientItem) = Ingredient(
+    override fun mapToDomain(modelItem: IngredientItem) = IngredientDomainModel(
         id = modelItem.id,
         name = modelItem.name,
         localizedName = modelItem.localizedName,
         image = modelItem.image
     )
-
 }

@@ -1,4 +1,4 @@
-package com.sapient.recipeapp
+package com.sapient.recipeapp.util
 
 import com.sapient.recipeapp.data.model.IngredientEntity
 import com.sapient.recipeapp.data.model.InstructionEntity
@@ -34,6 +34,4 @@ class RecipeEntityDataProvider {
             return listOf(getRecipeEntity())
         }
     }
-
-
 }

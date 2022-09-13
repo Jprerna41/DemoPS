@@ -33,56 +33,33 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), RecipeList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         recipeListViewModel.getRecipes()
         super.onViewCreated(view, savedInstanceState)
-        val gridLayoutManager = GridLayoutManager(context, 2)
-        recipeListAdapter = RecipeListAdapter(this)
 
         binding.rvRecipes.apply {
-            layoutManager = gridLayoutManager
-            setHasFixedSize(true)
+            recipeListAdapter = RecipeListAdapter(this@RecipeListFragment)
             adapter = recipeListAdapter
+            layoutManager = GridLayoutManager(context, 2)
             (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+            setHasFixedSize(true)
         }
 
         initObserver()
     }
 
     private fun initObserver() = with(recipeListViewModel) {
-        recipesLiveData.observe(viewLifecycleOwner) { result ->
-            bindListData(result)
+        recipesData.observe(viewLifecycleOwner) { data ->
+            bindListData(data)
         }
 
-        loadingView.observe(viewLifecycleOwner) {
-            if (it) {
-                binding.apply {
-                    pbLoading.visible()
-                    tvNotFound.gone()
-                    rvRecipes.gone()
-                }
-            }
+        pbLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) binding.pbLoading.visible()
+            else binding.pbLoading.gone()
         }
     }
 
-    private fun showDataView(show: Boolean) {
-        binding.apply {
-            if (show) {
-                rvRecipes.visible()
-                tvNotFound.gone()
-            } else {
-                rvRecipes.gone()
-                tvNotFound.visible()
-            }
-            pbLoading.gone()
-        }
-    }
+    private fun bindListData(recipes: List<RecipeItem>?) =
+        if (recipes.isNullOrEmpty()) binding.tvNotFound.visible()
+        else recipeListAdapter.submitList(recipes)
 
-    private fun bindListData(recipes: List<RecipeItem>) {
-        if (recipes.isNotEmpty()) {
-            recipeListAdapter.submitList(recipes)
-            showDataView(true)
-        } else {
-            showDataView(false)
-        }
-    }
 
     override fun onItemSelected(recipe: RecipeItem) {
         val action = RecipeListFragmentDirections.actionNavigateToDetailView(recipe)
@@ -90,8 +67,8 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), RecipeList
     }
 
     override fun onUpdateFavourite(recipesItem: RecipeItem, position: Int) {
-        recipeListViewModel.setFavorite(recipesItem)
-        recipeListAdapter.notifyItemChanged(position)
+        with(recipeListViewModel) {
+            if (recipesItem.isFavourite) addFavourite(recipesItem) else removeFavourite(recipesItem)
+        }.also { recipeListAdapter.notifyItemChanged(position) }
     }
-
 }

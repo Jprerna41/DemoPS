@@ -28,5 +28,4 @@ object RepositoryModule {
             mapper = mapper
         )
     }
-
 }

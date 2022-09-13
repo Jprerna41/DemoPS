@@ -1,4 +1,4 @@
-package com.sapient.recipeapp
+package com.sapient.recipeapp.util
 
 import android.app.Application
 import android.content.Context
