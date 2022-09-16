@@ -7,4 +7,4 @@ import kotlinx.parcelize.Parcelize
 data class InstructionDomainModel(
     val name: String?,
     val steps: List<StepsDomainModel>?
-) :Model(), Parcelable
+) :DomainModel(), Parcelable

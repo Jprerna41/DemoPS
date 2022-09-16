@@ -5,7 +5,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.sapient.recipeapp.databinding.ActivityMainBinding
-import com.sapient.recipeapp.presentation.base.BaseActivity
+import com.sapient.recipeapp.ui.base.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

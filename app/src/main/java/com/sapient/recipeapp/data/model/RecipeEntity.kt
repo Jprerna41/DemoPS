@@ -3,7 +3,7 @@ package com.sapient.recipeapp.data.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.sapient.recipeapp.data.base.ModelEntity
+import com.sapient.recipeapp.data.base.EntityModel
 
 @Entity(tableName = RecipeEntity.TABLE_NAME)
 data class RecipeEntity(
@@ -35,7 +35,7 @@ data class RecipeEntity(
 
     var isFavourite: Boolean = false
 
-) : ModelEntity() {
+) : EntityModel() {
     companion object {
         const val TABLE_NAME = "favorite"
         const val COLUMN_ID = "id"

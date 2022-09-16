@@ -5,18 +5,19 @@ import com.sapient.recipeapp.data.model.IngredientEntity
 import com.sapient.recipeapp.domain.model.IngredientDomainModel
 import javax.inject.Inject
 
-class IngredientEntityMapper @Inject constructor() : EntityMapper<IngredientDomainModel, IngredientEntity> {
-    override fun mapToDomain(entity: IngredientEntity) = IngredientDomainModel(
-        id = entity.id,
-        name = entity.name,
-        localizedName = entity.localizedName,
-        image = entity.image
+class IngredientEntityMapper @Inject constructor() :
+    EntityMapper<IngredientDomainModel, IngredientEntity> {
+    override fun mapToDomainModel(uiModel: IngredientEntity) = IngredientDomainModel(
+        id = uiModel.id,
+        name = uiModel.name,
+        localizedName = uiModel.localizedName,
+        image = uiModel.image
     )
 
-    override fun mapToEntity(model: IngredientDomainModel) = IngredientEntity(
-        id = model.id,
-        name = model.name,
-        localizedName = model.localizedName,
-        image = model.image
+    override fun mapToDataModel(domainModel: IngredientDomainModel) = IngredientEntity(
+        id = domainModel.id,
+        name = domainModel.name,
+        localizedName = domainModel.localizedName,
+        image = domainModel.image
     )
 }

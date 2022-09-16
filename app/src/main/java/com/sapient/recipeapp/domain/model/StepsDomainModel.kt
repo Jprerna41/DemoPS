@@ -8,4 +8,4 @@ data class StepsDomainModel(
     val number: Int,
     val step: String?,
     val ingredients: List<IngredientDomainModel>?
-) : Model(), Parcelable
+) : DomainModel(), Parcelable

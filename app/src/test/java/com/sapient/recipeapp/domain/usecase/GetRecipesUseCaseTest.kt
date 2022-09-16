@@ -1,6 +1,6 @@
 package com.sapient.recipeapp.domain.usecase
 
-import com.sapient.recipeapp.data.Resource
+import com.sapient.recipeapp.domain.utils.Resource
 import com.sapient.recipeapp.domain.repository.RecipeRepository
 import com.sapient.recipeapp.util.RecipeEntityDataProvider
 import kotlinx.coroutines.flow.flow

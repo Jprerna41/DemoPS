@@ -1,6 +1,6 @@
 package com.sapient.recipeapp.domain.repository
 
-import com.sapient.recipeapp.data.Resource
+import com.sapient.recipeapp.domain.utils.Resource
 import com.sapient.recipeapp.domain.model.RecipeDomainModel
 import kotlinx.coroutines.flow.Flow
 

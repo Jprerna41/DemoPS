@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/RecipeListFragment"
-        android:name="com.sapient.recipeapp.presentation.fragments.recipeList.RecipeListFragment"
+        android:name="com.sapient.recipeapp.ui.fragments.recipeList.RecipeListFragment"
         android:label="@string/title_recipe"
         tools:layout="@layout/fragment_recipe_list">
 
@@ -18,13 +18,13 @@
 
     <fragment
         android:id="@+id/RecipeDetailFragment"
-        android:name="com.sapient.recipeapp.presentation.fragments.recipeDetail.RecipeDetailFragment"
+        android:name="com.sapient.recipeapp.ui.fragments.recipeDetail.RecipeDetailFragment"
         android:label="@string/title_recipe_detail"
         tools:layout="@layout/fragment_recipe_detail">
 
         <argument
-            android:name="RecipeItem"
-            app:argType="com.sapient.recipeapp.presentation.model.RecipeItem" />
+            android:name="RecipeDetailUiState"
+            app:argType="com.sapient.recipeapp.ui.model.RecipeDetailUiState" />
 
     </fragment>
 

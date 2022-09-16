@@ -22,9 +22,7 @@ class RecipeDataProvider {
             title = "Test",
             summary = "Test Summary",
             imageUrl = "https://spoonacular.com/recipeImages/716426-312x231.jpg",
-            imageType = "jpg",
             sourceName = "Full Belly Sisters",
-            dishTypes = dishTypeList,
             analyzedInstructions = listOf(instructionEntity),
             isFavourite = true
         )

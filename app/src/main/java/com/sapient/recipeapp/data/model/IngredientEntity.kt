@@ -1,7 +1,7 @@
 package com.sapient.recipeapp.data.model
 
 import androidx.room.ColumnInfo
-import com.sapient.recipeapp.data.base.ModelEntity
+import com.sapient.recipeapp.data.base.EntityModel
 
 data class IngredientEntity(
     @ColumnInfo(name = COLUMN_ID)
@@ -16,7 +16,7 @@ data class IngredientEntity(
     @ColumnInfo(name = COLUMN_IMAGE)
     val image: String?,
 
-) : ModelEntity() {
+) : EntityModel() {
     companion object {
         const val COLUMN_ID = "id"
         const val COLUMN_NAME = "name"

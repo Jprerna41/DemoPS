@@ -7,13 +7,13 @@ import javax.inject.Inject
 
 class InstructionEntityMapper @Inject constructor(private val stepsEntityMapper: StepsEntityMapper) :
     EntityMapper<InstructionDomainModel, InstructionEntity> {
-    override fun mapToDomain(entity: InstructionEntity) = InstructionDomainModel(
-        name = entity.name,
-        steps = entity.steps?.map { stepsEntityMapper.mapToDomain(it) }
+    override fun mapToDomainModel(uiModel: InstructionEntity) = InstructionDomainModel(
+        name = uiModel.name,
+        steps = uiModel.steps?.map { stepsEntityMapper.mapToDomainModel(it) }
     )
 
-    override fun mapToEntity(model: InstructionDomainModel) = InstructionEntity(
-        name = model.name,
-        steps = model.steps?.map { stepsEntityMapper.mapToEntity(it) }
+    override fun mapToDataModel(domainModel: InstructionDomainModel) = InstructionEntity(
+        name = domainModel.name,
+        steps = domainModel.steps?.map { stepsEntityMapper.mapToDataModel(it) }
     )
 }
