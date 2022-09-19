@@ -61,17 +61,9 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), RecipeList
         if (recipes.isNullOrEmpty()) binding.tvNotFound.visible()
         else recipeListAdapter.submitList(recipes)
 
-
     override fun onItemSelected(recipe: RecipeUiState) {
-        val detailView = RecipeDetailUiState(
-            id = recipe.id,
-            title = recipe.title,
-            summary = recipe.summary,
-            imageUrl = recipe.imageUrl,
-            sourceName = recipe.sourceName,
-            analyzedInstructions = recipe.analyzedInstructions
-        )
-        val action = RecipeListFragmentDirections.actionNavigateToDetailView(detailView)
+        val detailModel = createRecipeDetailModel(recipe)
+        val action = RecipeListFragmentDirections.actionNavigateToDetailView(detailModel)
         findNavController().navigate(action)
     }
 
@@ -80,4 +72,13 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), RecipeList
             if (recipesItem.isFavourite) addFavourite(recipesItem) else removeFavourite(recipesItem)
         }.also { recipeListAdapter.notifyItemChanged(position) }
     }
+
+    private fun createRecipeDetailModel(recipe : RecipeUiState) = RecipeDetailUiState(
+        id = recipe.id,
+        title = recipe.title,
+        summary = recipe.summary,
+        imageUrl = recipe.imageUrl,
+        sourceName = recipe.sourceName,
+        analyzedInstructions = recipe.analyzedInstructions
+    )
 }

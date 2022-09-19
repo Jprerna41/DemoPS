@@ -10,4 +10,5 @@
     <string name="hint_summary">Summary</string>
     <string name="argument_recipe">recipes</string>
     <string name="placeholder_tv_title">Karedok Leunca</string>
+    <string name="placeholder_unexpected_error">Unexpected Error!!!</string>
 </resources>

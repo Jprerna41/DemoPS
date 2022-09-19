@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sapient.recipeapp.domain.utils.Resource
 import com.sapient.recipeapp.domain.usecase.GetRecipesUseCase
 import com.sapient.recipeapp.domain.usecase.InsertFavRecipeUseCase
 import com.sapient.recipeapp.domain.usecase.RemoveFavRecipeUseCase
+import com.sapient.recipeapp.domain.utils.Resource
 import com.sapient.recipeapp.ui.model.RecipeUiState
 import com.sapient.recipeapp.ui.model.mapper.RecipeItemMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
