@@ -15,25 +15,23 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val timeoutRead = 30   //In seconds
-private const val contentType = "Content-Type"
-private const val contentTypeValue = "application/json"
 private const val timeoutConnect = 30   //In seconds
 
 @Singleton
 class RetrofitBuilder @Inject constructor(@ApplicationContext private val context: Context) {
-
     private var baseUrl: String = context.getString(R.string.base_url)
     private val okHttpBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
-    private var headerInterceptor = Interceptor { chain ->
-        val original = chain.request()
+    private var interceptors = mutableListOf<Interceptor>()
 
-        val request = original.newBuilder()
-            .header(contentType, contentTypeValue)
-            .method(original.method, original.body)
-            .build()
-
-        chain.proceed(request)
+    /**
+     * add custom interceptor for ok http client
+     * @param interceptor is a interceptor for ok http client
+     */
+    fun addInterceptors(vararg interceptor: Interceptor): RetrofitBuilder {
+        interceptors.addAll(interceptor)
+        return this
     }
+
     private val logger: HttpLoggingInterceptor
         get() {
             val loggingInterceptor = HttpLoggingInterceptor()
@@ -44,7 +42,6 @@ class RetrofitBuilder @Inject constructor(@ApplicationContext private val contex
         }
 
     fun build(): Retrofit {
-        okHttpBuilder.addInterceptor(headerInterceptor)
         okHttpBuilder.addInterceptor(logger)
         okHttpBuilder.connectTimeout(timeoutConnect.toLong(), TimeUnit.SECONDS)
         okHttpBuilder.readTimeout(timeoutRead.toLong(), TimeUnit.SECONDS)

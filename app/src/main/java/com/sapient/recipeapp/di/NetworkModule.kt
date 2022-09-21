@@ -1,5 +1,6 @@
 package com.sapient.recipeapp.di
 
+import com.sapient.recipeapp.data.remote.interceptor.HeaderInterceptor
 import com.sapient.recipeapp.data.remote.api.RecipeApi
 import com.sapient.recipeapp.data.remote.builder.RetrofitBuilder
 import dagger.Module
@@ -15,10 +16,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRecipeService(retrofit: Retrofit): RecipeApi = retrofit.create(RecipeApi::class.java)
+    fun provideRetrofit(retrofitBuilder: RetrofitBuilder, headerInterceptor: HeaderInterceptor): Retrofit = retrofitBuilder
+        .addInterceptors(headerInterceptor)
+        .build()
 
     @Provides
     @Singleton
-    fun provideRetrofit(retrofitBuilder: RetrofitBuilder): Retrofit = retrofitBuilder
-        .build()
+    fun provideRecipeService(retrofit: Retrofit): RecipeApi = retrofit.create(RecipeApi::class.java)
+
 }
