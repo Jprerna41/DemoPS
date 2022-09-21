@@ -1,65 +1,86 @@
 package com.sapient.recipeapp.domain.usecase
 
-import com.sapient.recipeapp.domain.utils.Resource
+import com.sapient.recipeapp.domain.utils.FakeDataSource
+import com.sapient.recipeapp.domain.model.RecipeDomainModel
 import com.sapient.recipeapp.domain.repository.RecipeRepository
-import com.sapient.recipeapp.util.RecipeEntityDataProvider
+import com.sapient.recipeapp.domain.utils.Resource
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.`when`
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 
-
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class GetRecipesUseCaseTest {
 
-    private lateinit var mockRepository: RecipeRepository
-    private lateinit var useCase: GetRecipesUseCase
+    private lateinit var getRecipesUseCase: GetRecipesUseCase
+    private val mockFakeRepo = mockk<RecipeRepository>()
+    private lateinit var recipe : RecipeDomainModel
 
     @Before
     fun setUp() {
-        mockRepository = mock {
-            on { requestRecipes() } doReturn flow {
-                Resource.Success(listOf(RecipeEntityDataProvider.getRecipeEntityList()))
+        getRecipesUseCase = GetRecipesUseCase(mockFakeRepo)
+        recipe = FakeDataSource.recipe
+    }
+
+    @Test
+    fun getRecipes_thenReturn_recipesListData() = runTest {
+        every { mockFakeRepo.requestRecipes() } returns flow { listOf(recipe) }
+
+        val value = mockFakeRepo.requestRecipes()
+
+        assertNotNull(value)
+        assertEquals(value, EXPECTED_RECIPE_LIST_SIZE)
+    }
+
+    @Test
+    fun getRecipes_thenReturn_correctRecipeDataSize() = runTest {
+        var actualOutput: Int? = 0
+        val value = mockFakeRepo.requestRecipes().first()
+        with(value) {
+            when (this) {
+                is Resource.Success -> {
+                    actualOutput = data?.size
+                }
+                else -> {}
             }
         }
-        useCase = GetRecipesUseCase(repository = mockRepository)
-    }
 
-
-    @Test
-    fun `test getRecipes method call`() {
-        useCase()
-        verify(mockRepository, times(1)).requestRecipes()
+        assertNotNull(actualOutput)
+        assertEquals(actualOutput, EXPECTED_RECIPE_LIST_SIZE)
     }
 
     @Test
-    fun `test expected recipe ids`() = runBlocking {
+    fun getRecipes_thenReturn_correctRecipeId() = runTest {
+        every { mockFakeRepo.requestRecipes() } returns flow {
+            Resource.Success(
+                FakeDataSource.recipe
+            )
+        }
 
-        useCase().collect { result ->
-            result.data?.map {
-                Assert.assertEquals(EXPECTED_RECIPE_ID, it.id)
+        var actualId: Int? = 0
+        val value = getRecipesUseCase().first()
+        with(value) {
+            when (this) {
+                is Resource.Success -> {
+                    actualId = data?.first()?.id
+                }
+                else -> {}
             }
         }
-        verify(mockRepository, times(1)).requestRecipes()
-    }
 
-    @Test
-    fun `test getRecipe return empty list`() = runBlocking {
-
-        `when`(useCase()).thenReturn(flow { RecipeEntityDataProvider.getRecipeEntityList() })
-
-        useCase().collect { result ->
-            Assert.assertEquals(EXPECTED_RECIPE_LIST_SIZE, result.data?.size)
-        }
+        assertNotNull(value)
+        assertEquals(actualId, EXPECTED_RECIPE_ID)
     }
 
     private companion object {
-        const val EXPECTED_RECIPE_ID = 8723648
-        const val EXPECTED_RECIPE_LIST_SIZE = 0
+        const val EXPECTED_RECIPE_ID = 716426
+        const val EXPECTED_RECIPE_LIST_SIZE = 1
     }
 }

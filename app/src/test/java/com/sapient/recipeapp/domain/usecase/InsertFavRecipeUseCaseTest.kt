@@ -1,33 +1,42 @@
 package com.sapient.recipeapp.domain.usecase
 
+import com.sapient.recipeapp.domain.utils.FakeDataSource
 import com.sapient.recipeapp.domain.model.RecipeDomainModel
 import com.sapient.recipeapp.domain.repository.RecipeRepository
-import com.sapient.recipeapp.util.RecipeDataProvider
+import io.mockk.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.doNothing
 
-
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class InsertFavRecipeUseCaseTest {
-
-    private lateinit var insertUseCase: InsertFavRecipeUseCase
-    private val mockRepository: RecipeRepository = Mockito.mock(RecipeRepository::class.java)
-
+    private lateinit var insertRecipesUseCase: InsertFavRecipeUseCase
+    private val recipeListRepository = mockk<RecipeRepository>()
     private lateinit var recipe: RecipeDomainModel
 
     @Before
     fun setUp() {
-        insertUseCase = InsertFavRecipeUseCase(repository = mockRepository)
-        recipe = RecipeDataProvider.getTestFavouriteRecipe()
+        recipe = FakeDataSource.recipe
+        insertRecipesUseCase = InsertFavRecipeUseCase(repository = recipeListRepository)
     }
 
     @Test
-    fun `when recipe inserted as fav then invoke repository insert method`() {
+    fun testInsertRecipe_thenReturn_successFullEntry() = runTest {
+        every { recipeListRepository.insertFavorite(recipe) } just Runs
 
-        insertUseCase(recipe)
+        insertRecipesUseCase(recipe)
 
-        verify(mockRepository, times(1)).insertFavorite(recipe)
+        verify { recipeListRepository.insertFavorite(recipe) }
+    }
+
+    @Test
+    fun testInsertRecipe_thenDoNothing() = runTest {
+        every { recipeListRepository.insertFavorite(any()) }
+
+        insertRecipesUseCase(recipe)
+
+        verify { recipeListRepository.insertFavorite(FakeDataSource.recipe) wasNot Called }
     }
 }

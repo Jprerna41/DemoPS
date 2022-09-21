@@ -1,4 +1,4 @@
-package com.sapient.recipeapp.data
+package com.sapient.recipeapp.data.repository
 
 import com.sapient.recipeapp.data.local.LocalDataSource
 import com.sapient.recipeapp.data.mapper.RecipeEntityMapper

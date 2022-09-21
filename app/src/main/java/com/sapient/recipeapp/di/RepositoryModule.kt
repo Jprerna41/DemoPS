@@ -1,6 +1,6 @@
 package com.sapient.recipeapp.di
 
-import com.sapient.recipeapp.data.RecipeRepositoryImpl
+import com.sapient.recipeapp.data.repository.RecipeRepositoryImpl
 import com.sapient.recipeapp.data.local.LocalDataSource
 import com.sapient.recipeapp.data.mapper.RecipeEntityMapper
 import com.sapient.recipeapp.data.remote.RemoteDataSource

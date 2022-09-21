@@ -1,5 +1,6 @@
 package com.sapient.recipeapp.ui.fragments.recipeList
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -68,6 +69,11 @@ class RecipeListViewModel
                 removeFavRecipeUseCase(repoItemMapper.mapToDomainModel(recipe))
             }
         }
+    }
+
+    @VisibleForTesting
+    fun setRecipeLiveData(list : List<RecipeUiState>){
+        _recipesData.postValue(list)
     }
 }
 
