@@ -1,6 +1,5 @@
 package com.sapient.recipeapp.ui.fragments.recipeList
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,7 +12,6 @@ import com.sapient.recipeapp.ui.model.RecipeUiState
 import com.sapient.recipeapp.ui.model.mapper.RecipeItemMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -27,28 +25,24 @@ class RecipeListViewModel
     private val repoItemMapper: RecipeItemMapper
 ) : ViewModel() {
 
-    private val _recipesData = MutableLiveData<List<RecipeUiState>?>()
-    val recipesData: LiveData<List<RecipeUiState>?> = _recipesData
-
-    private val _pbLoading = MutableLiveData<Boolean>()
-    val pbLoading: LiveData<Boolean> = _pbLoading
+    private val _recipesData = MutableLiveData<Resource<List<RecipeUiState>?>>()
+    val recipesData: LiveData<Resource<List<RecipeUiState>?>> = _recipesData
 
     fun getRecipes() {
         viewModelScope.launch {
-            _pbLoading.postValue(true)
+            _recipesData.postValue(Resource.Loading())
             getRecipesUseCase().collect { result ->
                 when (result) {
-                    is Resource.Loading -> _pbLoading.postValue(true)
+                    is Resource.Loading -> _recipesData.postValue(Resource.Loading())
                     is Resource.Success -> {
-                        result.data?.map { recipe -> repoItemMapper.mapToUiModel(recipe) }
-                            .apply {
-                                _recipesData.postValue(this)
-                                _pbLoading.postValue(false)
-                            }
+                        result.data?.let {
+                            val uiRecipeState =
+                                it.map { recipe -> repoItemMapper.mapToUiModel(recipe) }
+                            _recipesData.postValue(Resource.Success(uiRecipeState))
+                        }
                     }
                     is Resource.Error -> {
-                        _recipesData.postValue(null)
-                        _pbLoading.postValue(false)
+                        _recipesData.postValue(Resource.Error(result.errorMessage))
                     }
                 }
             }
@@ -56,24 +50,15 @@ class RecipeListViewModel
     }
 
     fun addFavourite(recipe: RecipeUiState) {
-        viewModelScope.launch {
-            withContext(dispatcher) {
-                insertFavRecipeUseCase(repoItemMapper.mapToDomainModel(recipe))
-            }
+        viewModelScope.launch(dispatcher) {
+            insertFavRecipeUseCase(repoItemMapper.mapToDomainModel(recipe))
         }
     }
 
     fun removeFavourite(recipe: RecipeUiState) {
-        viewModelScope.launch {
-            withContext(dispatcher) {
-                removeFavRecipeUseCase(repoItemMapper.mapToDomainModel(recipe))
-            }
+        viewModelScope.launch(dispatcher) {
+            removeFavRecipeUseCase(repoItemMapper.mapToDomainModel(recipe))
         }
-    }
-
-    @VisibleForTesting
-    fun setRecipeLiveData(list : List<RecipeUiState>){
-        _recipesData.postValue(list)
     }
 }
 

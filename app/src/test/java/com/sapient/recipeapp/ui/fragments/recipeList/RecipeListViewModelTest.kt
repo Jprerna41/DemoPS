@@ -6,27 +6,26 @@ import com.sapient.recipeapp.domain.repository.RecipeRepository
 import com.sapient.recipeapp.domain.usecase.GetRecipesUseCase
 import com.sapient.recipeapp.domain.usecase.InsertFavRecipeUseCase
 import com.sapient.recipeapp.domain.usecase.RemoveFavRecipeUseCase
-import com.sapient.recipeapp.domain.utils.FakeDataSource
 import com.sapient.recipeapp.domain.utils.Resource
-import com.sapient.recipeapp.ui.model.RecipeUiState
 import com.sapient.recipeapp.ui.model.mapper.IngredientItemMapper
 import com.sapient.recipeapp.ui.model.mapper.InstructionItemMapper
 import com.sapient.recipeapp.ui.model.mapper.RecipeItemMapper
 import com.sapient.recipeapp.ui.model.mapper.StepsItemMapper
-import com.sapient.recipeapp.util.MainDispatcherRule
-import com.sapient.recipeapp.util.getOrAwaitValue
-import com.sapient.recipeapp.util.mock
+import com.sapient.recipeapp.util.*
+import com.sapient.recipeapp.util.RecipeDomainDataProvider.Companion.getFavRecipes
+import com.sapient.recipeapp.util.RecipeUIDataProvider.Companion.getRecipeUiList
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.`when`
 import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -36,34 +35,40 @@ internal class RecipeListViewModelTest {
     val dispatcherRule = MainDispatcherRule()
 
     @get:Rule
+    val mockkRule = MockKRule(this)
+
+    @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var viewModel: RecipeListViewModel
-    private val repository: RecipeRepository = mock()
-    private var dispatcher: CoroutineContext = mock()
     private lateinit var repoItemMapper: RecipeItemMapper
     private lateinit var instructionItemMapper: InstructionItemMapper
     private lateinit var stepsItemMapper: StepsItemMapper
     private lateinit var ingredientItemMapper: IngredientItemMapper
 
+    @MockK
+    private lateinit var dispatcher: CoroutineContext
+
+    @MockK
     private lateinit var getRecipesUseCase: GetRecipesUseCase
+
+    @MockK
     private lateinit var insertFavRecipeUseCase: InsertFavRecipeUseCase
+
+    @MockK
     private lateinit var removeFavRecipeUseCase: RemoveFavRecipeUseCase
 
-    private lateinit var recipe: RecipeDomainModel
-    private lateinit var recipeList: List<RecipeUiState>
+    private lateinit var recipe : RecipeDomainModel
 
     @Before
     fun setUp() {
+        recipe = getFavRecipes()
+
         ingredientItemMapper = IngredientItemMapper()
         stepsItemMapper = StepsItemMapper(ingredientItemMapper)
         instructionItemMapper = InstructionItemMapper(stepsItemMapper)
         repoItemMapper = RecipeItemMapper(instructionItemMapper)
-
-        getRecipesUseCase = GetRecipesUseCase(repository)
-        insertFavRecipeUseCase = InsertFavRecipeUseCase(repository)
-        removeFavRecipeUseCase = RemoveFavRecipeUseCase(repository)
-        dispatcher = Dispatchers.IO
+        dispatcher = Dispatchers.Unconfined
         viewModel = RecipeListViewModel(
             getRecipesUseCase,
             insertFavRecipeUseCase,
@@ -71,100 +76,64 @@ internal class RecipeListViewModelTest {
             dispatcher,
             repoItemMapper
         )
-
-        recipe = FakeDataSource.recipe
-        recipeList = listOf(repoItemMapper.mapToUiModel(recipe))
-
     }
 
     @Test
-    fun testGetRecipe_thenReturn_showLoading() = runTest {
-        `when`(repository.requestRecipes()).thenReturn(flow { Resource.Loading(listOf(recipe)) })
+    fun getRecipes_thenReturn_successRecipeListData() =
+        runTest {
+            every { getRecipesUseCase() } returns getRecipeResponseFromDB()
 
-        viewModel.getRecipes()
+            viewModel.getRecipes()
 
-        viewModel.pbLoading.getOrAwaitValue().let {
-            this.advanceUntilIdle()
-            assertNotNull(it)
-            assertEquals(it, true)
+            advanceUntilIdle()
+            val recipes = viewModel.recipesData.getOrAwaitValue()
+            assertTrue(recipes is Resource.Success)
+            assertEquals(recipes.data?.size, getRecipeUiList().size)
         }
-    }
 
     @Test
-    fun testSetLiveData_thenReturn_recipeLiveData() = runTest {
-        viewModel.setRecipeLiveData(listOf(repoItemMapper.mapToUiModel(recipe)))
+    fun getRecipes_thenReturn_successWithNoRecipeListData() =
+        runTest {
+            every { getRecipesUseCase() } returns getEmptyResponseFromDB()
 
-        viewModel.recipesData.getOrAwaitValue().let {
-            assertNotNull(it)
-            assertEquals(it, listOf(repoItemMapper.mapToUiModel(recipe)))
+            viewModel.getRecipes()
+
+            advanceUntilIdle()
+            val recipes = viewModel.recipesData.getOrAwaitValue()
+            assertTrue(recipes is Resource.Success)
+            assertEquals(recipes.data?.size, 0)
         }
-    }
 
     @Test
-    fun testSetRecipeData_emptyList_thenReturnListSize() = runTest {
-        viewModel.setRecipeLiveData(emptyList())
+    fun getRecipes_thenReturn_errorRecipeListData() =
+        runTest {
+            every { getRecipesUseCase() } returns getChampionDetailsResultDataError()
 
-        viewModel.recipesData.getOrAwaitValue().let {
-            assertNotNull(it)
-            assertEquals(it?.size, EMPTY_LIST_SIZE)
+            viewModel.getRecipes()
+
+            advanceUntilIdle()
+            val recipes = viewModel.recipesData.getOrAwaitValue()
+            assertNotNull(recipes is Resource.Error)
+            assertEquals(recipes.errorMessage, "Data error")
         }
-    }
 
     @Test
-    fun testGetRecipe_thenReturn_originalRecipeData() = runTest {
-        withContext(dispatcher) {
-            `when`(repository.requestRecipes()).thenReturn(flow { listOf(recipe) })
+    fun addFavRecipe_thenVerify_insertRecipeInvoked() =
+        runTest {
+            every { insertFavRecipeUseCase(recipe) } returns Unit
 
-            viewModel.setRecipeLiveData(recipeList)
+            viewModel.addFavourite(repoItemMapper.mapToUiModel(recipe))
 
-            viewModel.recipesData.getOrAwaitValue().let { recipesList ->
-                assertNotNull(recipesList)
-                assertEquals(
-                    recipesList,
-                    recipeList.map { repoItemMapper.mapToUiModel(recipe) })
-            }
+            verify{ insertFavRecipeUseCase(recipe) }
         }
-    }
 
     @Test
-    fun testAddFavRecipe_thenReturn_recipeWithFavTrue() = runTest {
-        recipe.isFavourite = true
+    fun removeFavRecipe_thenVerify_removeRecipeInvoked() =
+        runTest {
+            every { removeFavRecipeUseCase(recipe) } returns Unit
 
-        `when`(repository.requestRecipes()).thenReturn(flow { listOf(recipe) })
+            viewModel.removeFavourite(repoItemMapper.mapToUiModel(recipe))
 
-        viewModel.addFavourite(repoItemMapper.mapToUiModel(recipe))
-
-        viewModel.recipesData.observeForever { recipesList ->
-            assertNotNull(recipesList)
-            assertEquals(recipe.isFavourite, recipesList?.first()?.isFavourite)
+            verify { removeFavRecipeUseCase(recipe) }
         }
-    }
-
-    @Test
-    fun testAddFavRecipe_asFalse_thenReturnRecipeAsUnFavourite() = runTest {
-        recipe.isFavourite = false
-
-        `when`(repository.requestRecipes()).thenReturn(flow { listOf(recipe) })
-
-        viewModel.removeFavourite(repoItemMapper.mapToUiModel(recipe))
-
-        viewModel.recipesData.observeForever { recipesList ->
-            assertNotNull(recipesList)
-            assertEquals(recipe.isFavourite, recipesList?.first()?.isFavourite)
-        }
-    }
-
-    @Test
-    fun testRequestRecipe_whenNull_thenReturnNullRecipeLiveData() = runTest {
-        `when`(repository.requestRecipes()).thenReturn(null)
-
-        viewModel.recipesData.observeForever { recipesList ->
-            assertNull(recipesList)
-            assertEquals(null, recipesList)
-        }
-    }
-
-    private companion object {
-        const val EMPTY_LIST_SIZE = 0
-    }
 }

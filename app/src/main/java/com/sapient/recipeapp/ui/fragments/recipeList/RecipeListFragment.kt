@@ -9,11 +9,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.sapient.recipeapp.databinding.FragmentRecipeListBinding
+import com.sapient.recipeapp.domain.utils.Resource
 import com.sapient.recipeapp.ui.base.BaseFragment
 import com.sapient.recipeapp.ui.fragments.recipeList.adapter.RecipeListAdapter
 import com.sapient.recipeapp.ui.model.RecipeDetailUiState
 import com.sapient.recipeapp.ui.model.RecipeUiState
 import com.sapient.recipeapp.utils.extensions.gone
+import com.sapient.recipeapp.utils.extensions.showToast
 import com.sapient.recipeapp.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -48,17 +50,23 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), RecipeList
 
     private fun initObserver() = with(recipeListViewModel) {
         recipesData.observe(viewLifecycleOwner) { data ->
-            bindListData(data)
-        }
-
-        pbLoading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) binding.pbLoading.visible()
-            else binding.pbLoading.gone()
+            when (data) {
+                is Resource.Success -> {
+                    binding.pbLoading.gone()
+                    bindListData(data.data)
+                }
+                is Resource.Error -> {
+                    binding.pbLoading.gone()
+                    data.errorMessage?.showToast(context)
+                }
+                is Resource.Loading -> binding.pbLoading.visible()
+            }
         }
     }
 
     private fun bindListData(recipes: List<RecipeUiState>?) =
-        if (recipes.isNullOrEmpty()) binding.tvNotFound.visible()
+        if (recipes.isNullOrEmpty())
+            binding.tvNotFound.visible()
         else recipeListAdapter.submitList(recipes)
 
     override fun onItemSelected(recipe: RecipeUiState) {
@@ -73,7 +81,7 @@ class RecipeListFragment : BaseFragment<FragmentRecipeListBinding>(), RecipeList
         }.also { recipeListAdapter.notifyItemChanged(position) }
     }
 
-    private fun createRecipeDetailModel(recipe : RecipeUiState) = RecipeDetailUiState(
+    private fun createRecipeDetailModel(recipe: RecipeUiState) = RecipeDetailUiState(
         id = recipe.id,
         title = recipe.title,
         summary = recipe.summary,

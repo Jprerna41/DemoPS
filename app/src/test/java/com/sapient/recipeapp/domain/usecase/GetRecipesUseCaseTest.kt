@@ -1,86 +1,60 @@
 package com.sapient.recipeapp.domain.usecase
 
-import com.sapient.recipeapp.domain.utils.FakeDataSource
-import com.sapient.recipeapp.domain.model.RecipeDomainModel
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.sapient.recipeapp.domain.repository.RecipeRepository
 import com.sapient.recipeapp.domain.utils.Resource
+import com.sapient.recipeapp.util.RecipeDomainDataProvider.Companion.getRecipeDomainList
+import com.sapient.recipeapp.util.getChampionDetailsResultDataError
+import com.sapient.recipeapp.util.getRecipeResponseFromDB
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class GetRecipesUseCaseTest {
 
+    @get: Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val mockkRule = MockKRule(this)
+
+    @MockK
+    private lateinit var repository: RecipeRepository
     private lateinit var getRecipesUseCase: GetRecipesUseCase
-    private val mockFakeRepo = mockk<RecipeRepository>()
-    private lateinit var recipe : RecipeDomainModel
 
     @Before
     fun setUp() {
-        getRecipesUseCase = GetRecipesUseCase(mockFakeRepo)
-        recipe = FakeDataSource.recipe
+        getRecipesUseCase = GetRecipesUseCase(repository)
     }
 
     @Test
-    fun getRecipes_thenReturn_recipesListData() = runTest {
-        every { mockFakeRepo.requestRecipes() } returns flow { listOf(recipe) }
+    fun getAllRecipes_thenReturn_successWithRecipesData() =
+        runTest {
+            every { repository.requestRecipes() } returns getRecipeResponseFromDB()
 
-        val value = mockFakeRepo.requestRecipes()
+            val recipes = getRecipesUseCase()
 
-        assertNotNull(value)
-        assertEquals(value, EXPECTED_RECIPE_LIST_SIZE)
-    }
+            assertTrue(recipes.first() is Resource.Success)
+            assertEquals(recipes.first().data?.size, getRecipeDomainList().size)
+        }
 
     @Test
-    fun getRecipes_thenReturn_correctRecipeDataSize() = runTest {
-        var actualOutput: Int? = 0
-        val value = mockFakeRepo.requestRecipes().first()
-        with(value) {
-            when (this) {
-                is Resource.Success -> {
-                    actualOutput = data?.size
-                }
-                else -> {}
-            }
+    fun getAllRecipes_thenReturn_errorWithNoData() =
+        runTest {
+            every { repository.requestRecipes() } returns getChampionDetailsResultDataError()
+
+            val recipes = getRecipesUseCase()
+
+            assertTrue(recipes.first() is Resource.Error)
+            assertEquals(recipes.first().errorMessage, "Data error")
         }
-
-        assertNotNull(actualOutput)
-        assertEquals(actualOutput, EXPECTED_RECIPE_LIST_SIZE)
-    }
-
-    @Test
-    fun getRecipes_thenReturn_correctRecipeId() = runTest {
-        every { mockFakeRepo.requestRecipes() } returns flow {
-            Resource.Success(
-                FakeDataSource.recipe
-            )
-        }
-
-        var actualId: Int? = 0
-        val value = getRecipesUseCase().first()
-        with(value) {
-            when (this) {
-                is Resource.Success -> {
-                    actualId = data?.first()?.id
-                }
-                else -> {}
-            }
-        }
-
-        assertNotNull(value)
-        assertEquals(actualId, EXPECTED_RECIPE_ID)
-    }
-
-    private companion object {
-        const val EXPECTED_RECIPE_ID = 716426
-        const val EXPECTED_RECIPE_LIST_SIZE = 1
-    }
 }

@@ -1,30 +1,59 @@
 package com.sapient.recipeapp.domain.usecase
 
-import com.sapient.recipeapp.domain.utils.FakeDataSource
-import com.sapient.recipeapp.domain.model.RecipeDomainModel
 import com.sapient.recipeapp.domain.repository.RecipeRepository
+import com.sapient.recipeapp.util.RecipeDomainDataProvider
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
+import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
+import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class RemoveFavRecipeUseCaseTest {
 
-    private lateinit var deleteUseCase: RemoveFavRecipeUseCase
-    private lateinit var recipe: RecipeDomainModel
-    private val mockRepository: RecipeRepository = Mockito.mock(RecipeRepository::class.java)
+    @get:Rule
+    val mockkRule = MockKRule(this)
+
+    @MockK
+    private lateinit var repository: RecipeRepository
+
+    private lateinit var removeFavRecipeUseCase: RemoveFavRecipeUseCase
 
     @Before
     fun setUp() {
-        recipe = FakeDataSource.recipe
-        deleteUseCase = RemoveFavRecipeUseCase(repository = mockRepository)
+        removeFavRecipeUseCase = RemoveFavRecipeUseCase(repository = repository)
     }
 
     @Test
-    fun testDeleteUser_thenVerify_invokeCall() {
-        deleteUseCase(recipe)
+    fun deleteRecipe_thenReturn_successEntry() =
+        runTest {
+            val recipe = RecipeDomainDataProvider.getRecipes()
+            every { repository.deleteFavorite(recipe) } returns Unit
 
-        verify(mockRepository, times(1)).deleteFavorite(recipe)
-    }
+            removeFavRecipeUseCase(recipe)
+
+            verify(atLeast = 1) { repository.deleteFavorite(recipe) }
+        }
+
+    @Test
+    fun deleteRecipe_then_throwsException() =
+        runTest {
+            val recipe = RecipeDomainDataProvider.getRecipes()
+            every { repository.deleteFavorite(recipe) }.throws(Exception())
+
+            var exceptionThrown = false
+            try {
+                removeFavRecipeUseCase(recipe)
+            } catch (exception: Exception) {
+                exceptionThrown = true
+            }
+
+            assertTrue(exceptionThrown)
+            verify(atLeast = 0) { repository.deleteFavorite(recipe) }
+        }
 }

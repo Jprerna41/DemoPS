@@ -1,10 +1,12 @@
 package com.sapient.recipeapp.di
 
-import com.sapient.recipeapp.data.repository.RecipeRepositoryImpl
+import androidx.annotation.NonNull
 import com.sapient.recipeapp.data.local.LocalDataSource
 import com.sapient.recipeapp.data.mapper.RecipeEntityMapper
 import com.sapient.recipeapp.data.remote.RemoteDataSource
+import com.sapient.recipeapp.data.repository.RecipeRepositoryImpl
 import com.sapient.recipeapp.domain.repository.RecipeRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,19 +15,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+abstract class RepositoryModule {
 
-    @Singleton
-    @Provides
-    fun provideRecipeRepository(
-        localDataSource: LocalDataSource,
-        remoteDataSource: RemoteDataSource,
-        mapper: RecipeEntityMapper
-    ): RecipeRepository {
-        return RecipeRepositoryImpl(
-            localDataSource = localDataSource,
-            remoteDataSource = remoteDataSource,
-            mapper = mapper
-        )
-    }
+    @NonNull
+    @Binds
+    abstract fun provideRecipeRepository(
+        recipeRepositoryImpl: RecipeRepositoryImpl
+    ): RecipeRepository
 }

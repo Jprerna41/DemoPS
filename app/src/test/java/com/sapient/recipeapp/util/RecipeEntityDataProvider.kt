@@ -18,7 +18,7 @@ class RecipeEntityDataProvider {
         private val instructionEntity = InstructionEntity("instruction1", listOf(stepEntity))
         private val dishTypeList = listOf("side dish", "side dish")
 
-        private fun getRecipeEntity() = RecipeEntity(
+        fun getRecipeEntity() = RecipeEntity(
             id = 8723648,
             title = "Test",
             summary = "Test Summary",
@@ -31,7 +31,7 @@ class RecipeEntityDataProvider {
         )
 
         fun getRecipeEntityList(): List<RecipeEntity> {
-            return listOf(getRecipeEntity())
+            return listOf(getRecipeEntity(), getRecipeEntity())
         }
     }
 }
