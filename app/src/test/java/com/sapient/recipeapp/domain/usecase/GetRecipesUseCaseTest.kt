@@ -6,6 +6,7 @@ import com.sapient.recipeapp.domain.utils.Resource
 import com.sapient.recipeapp.util.RecipeDomainDataProvider.Companion.getRecipeDomainList
 import com.sapient.recipeapp.util.getChampionDetailsResultDataError
 import com.sapient.recipeapp.util.getRecipeResponseFromDB
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
@@ -39,7 +40,7 @@ internal class GetRecipesUseCaseTest {
     @Test
     fun getAllRecipes_thenReturn_successWithRecipesData() =
         runTest {
-            every { repository.requestRecipes() } returns getRecipeResponseFromDB()
+            coEvery { repository.requestRecipes() } returns getRecipeResponseFromDB()
 
             val recipes = getRecipesUseCase()
 
@@ -50,7 +51,7 @@ internal class GetRecipesUseCaseTest {
     @Test
     fun getAllRecipes_thenReturn_errorWithNoData() =
         runTest {
-            every { repository.requestRecipes() } returns getChampionDetailsResultDataError()
+            coEvery { repository.requestRecipes() } returns getChampionDetailsResultDataError()
 
             val recipes = getRecipesUseCase()
 

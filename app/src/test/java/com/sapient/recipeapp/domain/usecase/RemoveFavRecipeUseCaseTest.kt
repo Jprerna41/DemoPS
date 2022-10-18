@@ -54,6 +54,6 @@ internal class RemoveFavRecipeUseCaseTest {
             }
 
             assertTrue(exceptionThrown)
-            verify(atLeast = 0) { repository.deleteFavorite(recipe) }
+            verify(atLeast = 1) { repository.deleteFavorite(recipe) }
         }
 }

@@ -2,6 +2,7 @@ package com.sapient.recipeapp.domain.usecase
 
 import com.sapient.recipeapp.domain.repository.RecipeRepository
 import com.sapient.recipeapp.util.RecipeDomainDataProvider.Companion.getRecipes
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
@@ -33,7 +34,7 @@ internal class InsertFavRecipeUseCaseTest {
     fun insertRecipe_thenReturn_successEntry() =
         runTest {
             val recipe = getRecipes()
-            every { repository.insertFavorite(recipe) } returns Unit
+            coEvery { repository.insertFavorite(recipe) } returns Unit
 
             insertRecipesUseCase(recipe)
 
@@ -44,7 +45,7 @@ internal class InsertFavRecipeUseCaseTest {
     fun testInsertRecipe_then_throwsException() =
         runTest {
             val recipe = getRecipes()
-            every { repository.insertFavorite(recipe) }.throws(Exception())
+            coEvery { repository.insertFavorite(recipe) }.throws(Exception())
 
             var exceptionThrown = false
             try {
